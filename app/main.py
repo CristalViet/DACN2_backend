@@ -11,6 +11,7 @@ from app.routers import vocabulary as vocabulary_router
 from app.routers import recommendation as recommendation_router
 from app.routers import rating as rating_router
 from app.routers import auth as auth_router
+from fastapi.middleware.cors import CORSMiddleware
 
 # Tự động import tất cả modules trong app.models để đăng ký models vào Base.metadata
 def _import_all_models() -> None:
@@ -34,6 +35,18 @@ app = FastAPI(
     description="Backend for Book Learning App"
 )
 
+#Turn on CORS
+origins = [
+    "*" 
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          # hoặc ["*"] để cho phép tất cả
+    allow_credentials=True,
+    allow_methods=["*"],            # Cho phép tất cả các phương thức (GET, POST, PUT, DELETE,...)
+    allow_headers=["*"],            # Cho phép tất cả các header
+)
 
 @app.on_event("startup")
 def on_startup_create_tables():

@@ -2,7 +2,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
 from sqlalchemy.sql import func
 from app.database import Base
-
+from sqlalchemy.orm import relationship
 
 class User(Base):
     __tablename__ = "users"
@@ -15,3 +15,5 @@ class User(Base):
     role_id = Column(Integer, ForeignKey("user_roles.role_id"), nullable=True)
     date_joined = Column(DateTime(timezone=True), server_default=func.now())
     is_active = Column(Boolean, default=True)
+
+    role = relationship("UserRole", backref="users", lazy="joined")
