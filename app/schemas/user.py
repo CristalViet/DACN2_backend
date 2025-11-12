@@ -18,6 +18,7 @@ class UserUpdate(BaseModel):
     email: EmailStr | None = None
     full_name: str | None = None
     is_active: bool | None = None
+    role_id: int | None = None
 
 
 class UserResponse(UserBase):
@@ -25,5 +26,6 @@ class UserResponse(UserBase):
     full_name: str | None = None
     date_joined: datetime
     is_active: bool | None = True
+    role_id: int | None = None
 
     model_config = ConfigDict(from_attributes=True)

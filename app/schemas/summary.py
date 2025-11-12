@@ -6,7 +6,6 @@ class SummaryCreate(BaseModel):
     title: str
     content: str
     category_id: int
-    writer_id: int
 
 
 class SummaryUpdate(BaseModel):
