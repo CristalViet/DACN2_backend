@@ -23,16 +23,16 @@ def login(payload: schema.LoginRequest, db: Session = Depends(get_db)):
         )
     
     # 3️⃣ Create JWT token
-    token = create_access_token(subject=user.user_id)
+    token = create_access_token(subject=user.id)
     
     # 4️⃣ Prepare user data to return
     user_data = {
-        "user_id": user.user_id,
+        "id": user.id,
         "username": user.username,
         "email": user.email,
-        "full_name": user.full_name,
+        "phone": user.phone,
         "is_active": user.is_active,
-        "role": user.role.name if user.role else None
+        "role": user.role.role_name if user.role else None
     }
     
     # 5️⃣ Return response
@@ -46,10 +46,12 @@ def login(payload: schema.LoginRequest, db: Session = Depends(get_db)):
 @router.get("/me")
 def me(current_user = Depends(get_current_user)):
     return {
-        "user_id": current_user.user_id,
+        "id": current_user.id,
         "username": current_user.username,
         "email": current_user.email,
-        "full_name": current_user.full_name,
+        "phone": current_user.phone,
+        "profile_image": current_user.profile_image,
+        "bio": current_user.bio,
         "is_active": current_user.is_active,
     }
 

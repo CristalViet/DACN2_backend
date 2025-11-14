@@ -5,12 +5,16 @@ from app.routers import user_role as role_router
 from app.routers import category as category_router
 from app.routers import summary as summary_router
 from app.routers import comment as comment_router
-from app.routers import note as note_router
-from app.routers import reading_history as reading_history_router
-from app.routers import vocabulary as vocabulary_router
-from app.routers import recommendation as recommendation_router
-from app.routers import rating as rating_router
 from app.routers import auth as auth_router
+from app.routers import author as author_router
+from app.routers import publisher as publisher_router
+from app.routers import book as book_router
+from app.routers import order as order_router
+from app.routers import order_detail as order_detail_router
+from app.routers import content_section as content_section_router
+from app.routers import admin_comment as admin_comment_router
+from app.routers import cart as cart_router
+from app.routers import cart_item as cart_item_router
 from fastapi.middleware.cors import CORSMiddleware
 
 # Tự động import tất cả modules trong app.models để đăng ký models vào Base.metadata
@@ -66,14 +70,18 @@ def root():
     return {"message": "🚀 Database tables created!"}
 
 # Mount routers
+app.include_router(auth_router.router)
 app.include_router(user_router.router)
 app.include_router(role_router.router)
 app.include_router(category_router.router)
+app.include_router(author_router.router)
+app.include_router(publisher_router.router)
+app.include_router(book_router.router)
+app.include_router(order_router.router)
+app.include_router(order_detail_router.router)
+app.include_router(cart_router.router)
+app.include_router(cart_item_router.router)
 app.include_router(summary_router.router)
+app.include_router(content_section_router.router)
 app.include_router(comment_router.router)
-app.include_router(note_router.router)
-app.include_router(reading_history_router.router)
-app.include_router(vocabulary_router.router)
-app.include_router(recommendation_router.router)
-app.include_router(rating_router.router)
-app.include_router(auth_router.router)
+app.include_router(admin_comment_router.router)

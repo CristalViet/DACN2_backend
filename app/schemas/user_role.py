@@ -2,16 +2,19 @@ from pydantic import BaseModel, ConfigDict
 
 
 class UserRoleCreate(BaseModel):
-    name: str
+    role_name: str
+    permissions: str | None = None
 
 
 class UserRoleUpdate(BaseModel):
-    name: str | None = None
+    role_name: str | None = None
+    permissions: str | None = None
 
 
 class UserRoleResponse(BaseModel):
-    role_id: int
-    name: str
+    id: int
+    role_name: str
+    permissions: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 

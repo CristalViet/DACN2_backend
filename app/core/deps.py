@@ -31,3 +31,23 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     return user
 
 
+def require_admin(current_user = Depends(get_current_user)):
+    """Require user to have admin role"""
+    if not current_user.role or current_user.role.role_name != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+    return current_user
+
+
+def require_writer(current_user = Depends(get_current_user)):
+    """Require user to have writer role"""
+    if not current_user.role or current_user.role.role_name not in ["writer", "admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Writer or Admin access required"
+        )
+    return current_user
+
+
