@@ -6,15 +6,7 @@ from app.routers import category as category_router
 from app.routers import summary as summary_router
 from app.routers import comment as comment_router
 from app.routers import auth as auth_router
-from app.routers import author as author_router
-from app.routers import publisher as publisher_router
-from app.routers import book as book_router
-from app.routers import order as order_router
-from app.routers import order_detail as order_detail_router
-from app.routers import content_section as content_section_router
-from app.routers import admin_comment as admin_comment_router
-from app.routers import cart as cart_router
-from app.routers import cart_item as cart_item_router
+from app.routers import content_section as sections_router
 from fastapi.middleware.cors import CORSMiddleware
 
 # Tự động import tất cả modules trong app.models để đăng ký models vào Base.metadata
@@ -39,18 +31,17 @@ app = FastAPI(
     description="Backend for Book Learning App"
 )
 
-#Turn on CORS
-origins = [
-    "*" 
+# CORS
+allowed_origins = ["*"
 ]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,          # hoặc ["*"] để cho phép tất cả
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],            # Cho phép tất cả các phương thức (GET, POST, PUT, DELETE,...)
-    allow_headers=["*"],            # Cho phép tất cả các header
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
 
 @app.on_event("startup")
 def on_startup_create_tables():
@@ -84,4 +75,10 @@ app.include_router(cart_item_router.router)
 app.include_router(summary_router.router)
 app.include_router(content_section_router.router)
 app.include_router(comment_router.router)
-app.include_router(admin_comment_router.router)
+app.include_router(note_router.router)
+app.include_router(reading_history_router.router)
+app.include_router(vocabulary_router.router)
+app.include_router(recommendation_router.router)
+app.include_router(rating_router.router)
+app.include_router(auth_router.router)
+app.include_router(sections_router.router)

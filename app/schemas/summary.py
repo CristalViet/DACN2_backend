@@ -10,9 +10,8 @@ from app.schemas.user import UserResponse
 
 class SummaryCreate(BaseModel):
     title: str
-    book_id: int | None = None
-    status: str | None = None
-    audio_url: str | None = None
+    content: str
+    category_id: int
 
 
 class SummaryUpdate(BaseModel):
