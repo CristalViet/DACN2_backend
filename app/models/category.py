@@ -10,4 +10,3 @@ class Category(Base):
     category_name = Column(String(100), unique=True, nullable=False)
 
     books = relationship("Book", back_populates="category")
-    summaries = relationship("Summary", back_populates="category")

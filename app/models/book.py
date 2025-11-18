@@ -21,5 +21,6 @@ class Book(Base):
     publisher = relationship("Publisher", back_populates="books")
     order_details = relationship("OrderDetail", back_populates="book")
     cart_items = relationship("CartItem", back_populates="book")
+    summaries = relationship("Summary", back_populates="book")
 
 

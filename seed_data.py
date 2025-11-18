@@ -33,7 +33,7 @@ def seed_data():
             permissions="all"
         )
         user_role_obj = user_role.UserRole(
-            role_name="user",
+            role_name="reader",
             permissions="read"
         )
         writer_role_obj = user_role.UserRole(
@@ -62,20 +62,19 @@ def seed_data():
             is_active=True
         )
         
-        user1 = user.User(
-            username="john_doe",
-            email="john@example.com",
+        writer_user = user.User(
+            username="writer_user",
+            email="writer@example.com",
             password_hash=get_password_hash("password123"),
             phone="0987654321",
-            role_id=user_role_obj.id,
+            role_id=writer_role_obj.id,
             profile_image="https://via.placeholder.com/150",
-            bio="A book lover",
+            bio="A book writer",
             is_active=True
         )
-        
-        user2 = user.User(
-            username="jane_smith",
-            email="jane@example.com",
+        reader_user = user.User(
+            username="reader_user",
+            email="reader@example.com",
             password_hash=get_password_hash("password123"),
             phone="0912345678",
             role_id=user_role_obj.id,
@@ -84,12 +83,12 @@ def seed_data():
         )
         
         db.add(admin_user)
-        db.add(user1)
-        db.add(user2)
+        db.add(writer_user)
+        db.add(reader_user)
         db.commit()
         db.refresh(admin_user)
-        db.refresh(user1)
-        db.refresh(user2)
+        db.refresh(writer_user)
+        db.refresh(reader_user)
         print(f"✅ Created {db.query(user.User).count()} users")
         
         # 3. Categories
@@ -218,8 +217,8 @@ def seed_data():
         
         # 7. Carts
         print("🛒 Creating Carts...")
-        cart1 = cart.Cart(user_id=user1.id)
-        cart2 = cart.Cart(user_id=user2.id)
+        cart1 = cart.Cart(user_id=writer_user.id)
+        cart2 = cart.Cart(user_id=reader_user.id)
         db.add(cart1)
         db.add(cart2)
         db.commit()
@@ -259,7 +258,7 @@ def seed_data():
         print("📦 Creating Orders...")
         from datetime import timedelta
         order1 = order.Order(
-            user_id=user1.id,
+            user_id=writer_user.id,
             total_amount=Decimal("300000"),
             payment_method="Credit Card",
             payment_status=PaymentStatus.COMPLETED,
@@ -271,7 +270,7 @@ def seed_data():
             shipping_method="Standard"
         )
         order2 = order.Order(
-            user_id=user2.id,
+            user_id=reader_user.id,
             total_amount=Decimal("430000"),
             payment_method="Bank Transfer",
             payment_status=PaymentStatus.PENDING,
@@ -327,28 +326,34 @@ def seed_data():
         summaries_data = [
             {
                 "title": "Summary: Yellow Flowers on the Green Grass",
-                "book_author": "Nguyen Nhat Anh",
-                "book_cover_path": "https://via.placeholder.com/300x400",
+                "book_id": books[0].id,
                 "published_date": datetime.now(timezone.utc),
-                "category_id": categories[0].id,
-                "user_id": user1.id,
-                "status": "published",
+                "user_id": writer_user.id,
+                "status": "approved",
                 "avg_rating": 4.5,
-                "read_count": 150,
-                "audio_url": "https://example.com/audio1.mp3"
+                "read_count": 1200,
+                "audio_url": "https://example.com/audio_summary1.mp3"
             },
             {
                 "title": "Summary: Sapiens - A Brief History of Humankind",
-                "book_author": "Yuval Noah Harari",
-                "book_cover_path": "https://via.placeholder.com/300x400",
+                "book_id": books[1].id,
                 "published_date": datetime.now(timezone.utc),
-                "category_id": categories[1].id,
-                "user_id": user2.id,
-                "status": "published",
+                "user_id": writer_user.id,
+                "status": "approved",
                 "avg_rating": 4.8,
-                "read_count": 300,
-                "audio_url": "https://example.com/audio2.mp3"
+                "read_count": 2500,
+                "audio_url": "https://example.com/audio_summary2.mp3"
             },
+            {
+                "title": "Summary: How to Win Friends & Influence People (Draft)",
+                "book_id": books[2].id,
+                "published_date": None,
+                "user_id": writer_user.id,
+                "status": "editing",
+                "avg_rating": 0,
+                "read_count": 0,
+                "audio_url": None
+            }
         ]
         summaries = []
         for summary_data in summaries_data:
@@ -396,21 +401,21 @@ def seed_data():
         comments_data = [
             {
                 "summary_id": summaries[0].id,
-                "user_id": user1.id,
+                "user_id": writer_user.id,
                 "content": "Excellent and detailed summary!",
                 "parent_comment_id": None,
                 "access": CommentAccess.PUBLIC
             },
             {
                 "summary_id": summaries[0].id,
-                "user_id": user2.id,
+                "user_id": writer_user.id,
                 "content": "Thank you for sharing!",
                 "parent_comment_id": None,
                 "access": CommentAccess.PUBLIC
             },
             {
                 "summary_id": summaries[1].id,
-                "user_id": user1.id,
+                "user_id": reader_user.id,
                 "content": "This book truly changed the way I view history.",
                 "parent_comment_id": None,
                 "access": CommentAccess.PUBLIC

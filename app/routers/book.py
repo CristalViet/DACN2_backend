@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app import models
 from app.schemas import book as schema
+from sqlalchemy.orm import selectinload
 
 router = APIRouter(prefix="/books", tags=["Books"])
 
@@ -32,10 +33,15 @@ def list_books(db: Session = Depends(get_db)):
 
 @router.get("/{book_id}", response_model=schema.BookResponse)
 def get_book(book_id: int, db: Session = Depends(get_db)):
-    item = db.get(models.book.Book, book_id)
+    item = db.query(models.book.Book).options(
+        selectinload(models.book.Book.category),
+        selectinload(models.book.Book.author),
+        selectinload(models.book.Book.publisher),
+    ).filter(models.book.Book.id == book_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Book not found")
     return item
+
 
 
 @router.put("/{book_id}", response_model=schema.BookResponse)

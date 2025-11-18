@@ -26,3 +26,7 @@ class ContentSectionResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
+class ContentSectionReorder(BaseModel):
+    order: list[int]
+
