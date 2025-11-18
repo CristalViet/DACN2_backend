@@ -5,11 +5,6 @@ from app.routers import user_role as role_router
 from app.routers import category as category_router
 from app.routers import summary as summary_router
 from app.routers import comment as comment_router
-from app.routers import note as note_router
-from app.routers import reading_history as reading_history_router
-from app.routers import vocabulary as vocabulary_router
-from app.routers import recommendation as recommendation_router
-from app.routers import rating as rating_router
 from app.routers import auth as auth_router
 from app.routers import content_section as sections_router
 from fastapi.middleware.cors import CORSMiddleware
@@ -66,10 +61,19 @@ def root():
     return {"message": "🚀 Database tables created!"}
 
 # Mount routers
+app.include_router(auth_router.router)
 app.include_router(user_router.router)
 app.include_router(role_router.router)
 app.include_router(category_router.router)
+app.include_router(author_router.router)
+app.include_router(publisher_router.router)
+app.include_router(book_router.router)
+app.include_router(order_router.router)
+app.include_router(order_detail_router.router)
+app.include_router(cart_router.router)
+app.include_router(cart_item_router.router)
 app.include_router(summary_router.router)
+app.include_router(content_section_router.router)
 app.include_router(comment_router.router)
 app.include_router(note_router.router)
 app.include_router(reading_history_router.router)

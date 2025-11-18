@@ -2,16 +2,16 @@ from pydantic import BaseModel, ConfigDict
 
 
 class CategoryCreate(BaseModel):
-    name: str
+    category_name: str
 
 
 class CategoryUpdate(BaseModel):
-    name: str | None = None
+    category_name: str | None = None
 
 
 class CategoryResponse(BaseModel):
-    category_id: int
-    name: str
+    id: int
+    category_name: str
 
     model_config = ConfigDict(from_attributes=True)
 

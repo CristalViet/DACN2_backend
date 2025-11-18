@@ -6,8 +6,8 @@ class NoteHighlight(Base):
     __tablename__ = "notes_highlights"
 
     note_id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.user_id"))
-    summary_id = Column(Integer, ForeignKey("summaries.summary_id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+    summary_id = Column(Integer, ForeignKey("summaries.id"))
     section_id = Column(Integer, nullable=True)
     highlighted_text = Column(Text)
     note_content = Column(Text)
