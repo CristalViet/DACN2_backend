@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from app.database import get_db
 from app import models
+from app.helpers.recommendation import recommend_by_history
 from app.schemas import summary as schema
 from app.core.deps import get_current_user
 
