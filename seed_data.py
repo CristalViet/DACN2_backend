@@ -100,6 +100,12 @@ def seed_data():
             {"category_name": "Business"},
             {"category_name": "Self Development"},
             {"category_name": "Technology"},
+            {"category_name": "Fiction"},
+            {"category_name": "Psychology"},
+            {"category_name": "Philosophy"},
+            {"category_name": "Biography"},
+            {"category_name": "Economics"},
+            {"category_name": "Programming"},
         ]
         categories = []
         for cat_data in categories_data:
@@ -132,6 +138,108 @@ def seed_data():
                 "nationality": "USA",
                 "biography": "Famous author on personal development and communication skills"
             },
+            {
+                "name": "Stephen King",
+                "birth_date": date(1947, 9, 21),
+                "nationality": "USA",
+                "biography": "Master of horror and suspense fiction"
+            },
+            {
+                "name": "J.K. Rowling",
+                "birth_date": date(1965, 7, 31),
+                "nationality": "UK",
+                "biography": "Author of the famous Harry Potter series"
+            },
+            {
+                "name": "Daniel Kahneman",
+                "birth_date": date(1934, 3, 5),
+                "nationality": "Israel",
+                "biography": "Nobel Prize winner in Economics, expert in behavioral psychology"
+            },
+            {
+                "name": "Malcolm Gladwell",
+                "birth_date": date(1963, 9, 3),
+                "nationality": "Canada",
+                "biography": "Journalist and author known for popular science and psychology books"
+            },
+            {
+                "name": "Robert Kiyosaki",
+                "birth_date": date(1947, 4, 8),
+                "nationality": "USA",
+                "biography": "Entrepreneur and author of Rich Dad Poor Dad"
+            },
+            {
+                "name": "Elon Musk",
+                "birth_date": date(1971, 6, 28),
+                "nationality": "South Africa",
+                "biography": "Entrepreneur and CEO of Tesla and SpaceX"
+            },
+            {
+                "name": "Bill Gates",
+                "birth_date": date(1955, 10, 28),
+                "nationality": "USA",
+                "biography": "Co-founder of Microsoft and philanthropist"
+            },
+            {
+                "name": "Walter Isaacson",
+                "birth_date": date(1952, 5, 20),
+                "nationality": "USA",
+                "biography": "Biographer and journalist, author of Steve Jobs biography"
+            },
+            {
+                "name": "James Clear",
+                "birth_date": date(1986, 1, 22),
+                "nationality": "USA",
+                "biography": "Author of Atomic Habits, expert in habit formation"
+            },
+            {
+                "name": "Eric Ries",
+                "birth_date": date(1978, 9, 22),
+                "nationality": "USA",
+                "biography": "Entrepreneur and author of The Lean Startup methodology"
+            },
+            {
+                "name": "Robert C. Martin",
+                "birth_date": date(1952, 12, 5),
+                "nationality": "USA",
+                "biography": "Software engineer and author, known as Uncle Bob, expert in clean code"
+            },
+            {
+                "name": "Andrew Hunt",
+                "birth_date": date(1964, 3, 4),
+                "nationality": "USA",
+                "biography": "Software developer and co-author of The Pragmatic Programmer"
+            },
+            {
+                "name": "Clayton Christensen",
+                "birth_date": date(1952, 4, 6),
+                "nationality": "USA",
+                "biography": "Harvard Business School professor, author of The Innovator's Dilemma"
+            },
+            {
+                "name": "Jared Diamond",
+                "birth_date": date(1937, 9, 10),
+                "nationality": "USA",
+                "biography": "Geographer and author of Guns, Germs, and Steel"
+            },
+            {
+                "name": "William L. Shirer",
+                "birth_date": date(1904, 2, 23),
+                "nationality": "USA",
+                "biography": "Journalist and historian, author of The Rise and Fall of the Third Reich"
+            },
+            {
+                "name": "Ashlee Vance",
+                "birth_date": date(1977, 1, 1),
+                "nationality": "USA",
+                "biography": "Journalist and author of Elon Musk biography"
+            },
+            {
+                "name": "Stephen Covey",
+                "birth_date": date(1932, 10, 24),
+                "nationality": "USA",
+                "biography": "Author and educator, best known for The 7 Habits of Highly Effective People"
+            },
         ]
         authors = []
         for author_data in authors_data:
@@ -150,6 +258,10 @@ def seed_data():
             {"name": "Kim Dong Publishing House"},
             {"name": "Writers' Association Publishing House"},
             {"name": "The World Publishing House"},
+            {"name": "Penguin Random House"},
+            {"name": "HarperCollins"},
+            {"name": "Simon & Schuster"},
+            {"name": "Hachette Book Group"},
         ]
         publishers = []
         for pub_data in publishers_data:
@@ -164,9 +276,10 @@ def seed_data():
         # 6. Books
         print("📖 Creating Books...")
         books_data = [
+            # Novel cluster
             {
                 "title": "Yellow Flowers on the Green Grass",
-                "category_id": categories[0].id,
+                "category_id": categories[0].id,  # Novel
                 "author_id": authors[0].id,
                 "publisher_id": publishers[0].id,
                 "publish_date": date(2010, 1, 1),
@@ -175,8 +288,39 @@ def seed_data():
                 "stock_quantity": 50
             },
             {
+                "title": "The Book Thief",
+                "category_id": categories[0].id,  # Novel
+                "author_id": authors[0].id,
+                "publisher_id": publishers[1].id,
+                "publish_date": date(2005, 1, 1),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("180000"),
+                "stock_quantity": 25
+            },
+            {
+                "title": "The Shining",
+                "category_id": categories[6].id,  # Fiction
+                "author_id": authors[3].id,
+                "publisher_id": publishers[4].id,
+                "publish_date": date(1977, 1, 28),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("200000"),
+                "stock_quantity": 40
+            },
+            {
+                "title": "Harry Potter and the Philosopher's Stone",
+                "category_id": categories[6].id,  # Fiction
+                "author_id": authors[4].id,
+                "publisher_id": publishers[5].id,
+                "publish_date": date(1997, 6, 26),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("220000"),
+                "stock_quantity": 100
+            },
+            # Science cluster
+            {
                 "title": "Sapiens: A Brief History of Humankind",
-                "category_id": categories[1].id,
+                "category_id": categories[1].id,  # Science
                 "author_id": authors[1].id,
                 "publisher_id": publishers[3].id,
                 "publish_date": date(2011, 1, 1),
@@ -185,8 +329,101 @@ def seed_data():
                 "stock_quantity": 30
             },
             {
+                "title": "Homo Deus: A Brief History of Tomorrow",
+                "category_id": categories[1].id,  # Science
+                "author_id": authors[1].id,
+                "publisher_id": publishers[3].id,
+                "publish_date": date(2015, 1, 1),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("260000"),
+                "stock_quantity": 35
+            },
+            {
+                "title": "21 Lessons for the 21st Century",
+                "category_id": categories[1].id,  # Science
+                "author_id": authors[1].id,
+                "publisher_id": publishers[3].id,
+                "publish_date": date(2018, 8, 30),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("270000"),
+                "stock_quantity": 28
+            },
+            # Psychology cluster
+            {
+                "title": "Thinking, Fast and Slow",
+                "category_id": categories[7].id,  # Psychology
+                "author_id": authors[5].id,
+                "publisher_id": publishers[4].id,
+                "publish_date": date(2011, 10, 25),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("280000"),
+                "stock_quantity": 45
+            },
+            {
+                "title": "Outliers: The Story of Success",
+                "category_id": categories[7].id,  # Psychology
+                "author_id": authors[6].id,
+                "publisher_id": publishers[4].id,
+                "publish_date": date(2008, 11, 18),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("240000"),
+                "stock_quantity": 50
+            },
+            {
+                "title": "Blink: The Power of Thinking Without Thinking",
+                "category_id": categories[7].id,  # Psychology
+                "author_id": authors[6].id,
+                "publisher_id": publishers[4].id,
+                "publish_date": date(2005, 1, 11),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("230000"),
+                "stock_quantity": 42
+            },
+            {
+                "title": "The Tipping Point",
+                "category_id": categories[7].id,  # Psychology
+                "author_id": authors[6].id,
+                "publisher_id": publishers[4].id,
+                "publish_date": date(2000, 3, 1),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("220000"),
+                "stock_quantity": 38
+            },
+            # Business cluster
+            {
+                "title": "Rich Dad Poor Dad",
+                "category_id": categories[3].id,  # Business
+                "author_id": authors[7].id,
+                "publisher_id": publishers[6].id,
+                "publish_date": date(1997, 4, 1),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("190000"),
+                "stock_quantity": 80
+            },
+            {
+                "title": "Cashflow Quadrant",
+                "category_id": categories[3].id,  # Business
+                "author_id": authors[7].id,
+                "publisher_id": publishers[6].id,
+                "publish_date": date(1998, 1, 1),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("200000"),
+                "stock_quantity": 60
+            },
+            {
+                "title": "The Lean Startup",
+                "category_id": categories[3].id,  # Business
+                "author_id": authors[12].id,  # Eric Ries
+                "publisher_id": publishers[4].id,
+                "publish_date": date(2011, 9, 13),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("250000"),
+                "stock_quantity": 55
+            },
+            # Self Development cluster
+            {
                 "title": "How to Win Friends & Influence People",
-                "category_id": categories[4].id,
+                "category_id": categories[4].id,  # Self Development
                 "author_id": authors[2].id,
                 "publisher_id": publishers[3].id,
                 "publish_date": date(1936, 1, 1),
@@ -195,14 +432,97 @@ def seed_data():
                 "stock_quantity": 100
             },
             {
-                "title": "The Book Thief",
-                "category_id": categories[0].id,
-                "author_id": authors[0].id,
-                "publisher_id": publishers[1].id,
-                "publish_date": date(2005, 1, 1),
+                "title": "Atomic Habits",
+                "category_id": categories[4].id,  # Self Development
+                "author_id": authors[11].id,
+                "publisher_id": publishers[4].id,
+                "publish_date": date(2018, 10, 16),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("210000"),
+                "stock_quantity": 90
+            },
+            {
+                "title": "The 7 Habits of Highly Effective People",
+                "category_id": categories[4].id,  # Self Development
+                "author_id": authors[19].id,  # Stephen Covey
+                "publisher_id": publishers[3].id,
+                "publish_date": date(1989, 8, 15),
                 "cover_image": "https://via.placeholder.com/300x400",
                 "price": Decimal("180000"),
-                "stock_quantity": 25
+                "stock_quantity": 75
+            },
+            # Technology cluster
+            {
+                "title": "The Innovator's Dilemma",
+                "category_id": categories[5].id,  # Technology
+                "author_id": authors[15].id,  # Clayton Christensen
+                "publisher_id": publishers[4].id,
+                "publish_date": date(1997, 1, 1),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("290000"),
+                "stock_quantity": 40
+            },
+            {
+                "title": "Clean Code",
+                "category_id": categories[11].id,  # Programming
+                "author_id": authors[13].id,  # Robert C. Martin
+                "publisher_id": publishers[7].id,
+                "publish_date": date(2008, 8, 11),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("320000"),
+                "stock_quantity": 65
+            },
+            {
+                "title": "The Pragmatic Programmer",
+                "category_id": categories[11].id,  # Programming
+                "author_id": authors[14].id,  # Andrew Hunt
+                "publisher_id": publishers[7].id,
+                "publish_date": date(1999, 10, 20),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("300000"),
+                "stock_quantity": 55
+            },
+            # History cluster
+            {
+                "title": "Guns, Germs, and Steel",
+                "category_id": categories[2].id,  # History
+                "author_id": authors[16].id,  # Jared Diamond
+                "publisher_id": publishers[3].id,
+                "publish_date": date(1997, 3, 1),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("270000"),
+                "stock_quantity": 35
+            },
+            {
+                "title": "The Rise and Fall of the Third Reich",
+                "category_id": categories[2].id,  # History
+                "author_id": authors[17].id,  # William L. Shirer
+                "publisher_id": publishers[3].id,
+                "publish_date": date(1960, 10, 17),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("310000"),
+                "stock_quantity": 30
+            },
+            # Biography cluster
+            {
+                "title": "Steve Jobs",
+                "category_id": categories[9].id,  # Biography
+                "author_id": authors[10].id,  # Walter Isaacson
+                "publisher_id": publishers[4].id,
+                "publish_date": date(2011, 10, 24),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("300000"),
+                "stock_quantity": 50
+            },
+            {
+                "title": "Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future",
+                "category_id": categories[9].id,  # Biography
+                "author_id": authors[18].id,  # Ashlee Vance
+                "publisher_id": publishers[4].id,
+                "publish_date": date(2015, 5, 19),
+                "cover_image": "https://via.placeholder.com/300x400",
+                "price": Decimal("280000"),
+                "stock_quantity": 45
             },
         ]
         books = []
@@ -321,13 +641,17 @@ def seed_data():
         db.commit()
         print(f"✅ Created {db.query(order_detail.OrderDetail).count()} order details")
         
-        # 11. Summaries
+        # 11. Summaries (in clusters for recommendation testing)
         print("📄 Creating Summaries...")
+        from datetime import timedelta
+        base_time = datetime.now(timezone.utc)
+        
         summaries_data = [
+            # Novel cluster - multiple summaries for novel books
             {
                 "title": "Summary: Yellow Flowers on the Green Grass",
                 "book_id": books[0].id,
-                "published_date": datetime.now(timezone.utc),
+                "published_date": base_time - timedelta(days=10),
                 "user_id": writer_user.id,
                 "status": "approved",
                 "avg_rating": 4.5,
@@ -335,9 +659,50 @@ def seed_data():
                 "audio_url": "https://example.com/audio_summary1.mp3"
             },
             {
-                "title": "Summary: Sapiens - A Brief History of Humankind",
+                "title": "Complete Analysis: Yellow Flowers on the Green Grass",
+                "book_id": books[0].id,
+                "published_date": base_time - timedelta(days=5),
+                "user_id": reader_user.id,
+                "status": "approved",
+                "avg_rating": 4.7,
+                "read_count": 850,
+                "audio_url": "https://example.com/audio_summary_novel1.mp3"
+            },
+            {
+                "title": "Summary: The Book Thief",
                 "book_id": books[1].id,
-                "published_date": datetime.now(timezone.utc),
+                "published_date": base_time - timedelta(days=8),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.6,
+                "read_count": 1500,
+                "audio_url": "https://example.com/audio_summary_novel2.mp3"
+            },
+            {
+                "title": "Summary: The Shining",
+                "book_id": books[2].id,
+                "published_date": base_time - timedelta(days=7),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.4,
+                "read_count": 2000,
+                "audio_url": "https://example.com/audio_summary_fiction1.mp3"
+            },
+            {
+                "title": "Summary: Harry Potter and the Philosopher's Stone",
+                "book_id": books[3].id,
+                "published_date": base_time - timedelta(days=6),
+                "user_id": reader_user.id,
+                "status": "approved",
+                "avg_rating": 4.9,
+                "read_count": 5000,
+                "audio_url": "https://example.com/audio_summary_fiction2.mp3"
+            },
+            # Science cluster - multiple summaries for science books
+            {
+                "title": "Summary: Sapiens - A Brief History of Humankind",
+                "book_id": books[4].id,
+                "published_date": base_time - timedelta(days=12),
                 "user_id": writer_user.id,
                 "status": "approved",
                 "avg_rating": 4.8,
@@ -345,15 +710,262 @@ def seed_data():
                 "audio_url": "https://example.com/audio_summary2.mp3"
             },
             {
+                "title": "Deep Dive: Sapiens - Understanding Human Evolution",
+                "book_id": books[4].id,
+                "published_date": base_time - timedelta(days=3),
+                "user_id": reader_user.id,
+                "status": "approved",
+                "avg_rating": 4.9,
+                "read_count": 1800,
+                "audio_url": "https://example.com/audio_summary_science1.mp3"
+            },
+            {
+                "title": "Summary: Homo Deus - A Brief History of Tomorrow",
+                "book_id": books[5].id,
+                "published_date": base_time - timedelta(days=9),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.7,
+                "read_count": 1900,
+                "audio_url": "https://example.com/audio_summary_science2.mp3"
+            },
+            {
+                "title": "Summary: 21 Lessons for the 21st Century",
+                "book_id": books[6].id,
+                "published_date": base_time - timedelta(days=4),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.6,
+                "read_count": 1600,
+                "audio_url": "https://example.com/audio_summary_science3.mp3"
+            },
+            # Psychology cluster - multiple summaries for psychology books
+            {
+                "title": "Summary: Thinking, Fast and Slow",
+                "book_id": books[7].id,
+                "published_date": base_time - timedelta(days=11),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.8,
+                "read_count": 3000,
+                "audio_url": "https://example.com/audio_summary_psych1.mp3"
+            },
+            {
+                "title": "Key Insights: Thinking, Fast and Slow",
+                "book_id": books[7].id,
+                "published_date": base_time - timedelta(days=2),
+                "user_id": reader_user.id,
+                "status": "approved",
+                "avg_rating": 4.9,
+                "read_count": 2200,
+                "audio_url": "https://example.com/audio_summary_psych1b.mp3"
+            },
+            {
+                "title": "Summary: Outliers - The Story of Success",
+                "book_id": books[8].id,
+                "published_date": base_time - timedelta(days=10),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.5,
+                "read_count": 2100,
+                "audio_url": "https://example.com/audio_summary_psych2.mp3"
+            },
+            {
+                "title": "Summary: Blink - The Power of Thinking Without Thinking",
+                "book_id": books[9].id,
+                "published_date": base_time - timedelta(days=8),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.4,
+                "read_count": 1800,
+                "audio_url": "https://example.com/audio_summary_psych3.mp3"
+            },
+            {
+                "title": "Summary: The Tipping Point",
+                "book_id": books[10].id,
+                "published_date": base_time - timedelta(days=6),
+                "user_id": reader_user.id,
+                "status": "approved",
+                "avg_rating": 4.6,
+                "read_count": 1700,
+                "audio_url": "https://example.com/audio_summary_psych4.mp3"
+            },
+            # Business cluster - multiple summaries for business books
+            {
+                "title": "Summary: Rich Dad Poor Dad",
+                "book_id": books[11].id,
+                "published_date": base_time - timedelta(days=13),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.7,
+                "read_count": 4000,
+                "audio_url": "https://example.com/audio_summary_business1.mp3"
+            },
+            {
+                "title": "Financial Wisdom: Rich Dad Poor Dad Explained",
+                "book_id": books[11].id,
+                "published_date": base_time - timedelta(days=1),
+                "user_id": reader_user.id,
+                "status": "approved",
+                "avg_rating": 4.8,
+                "read_count": 3200,
+                "audio_url": "https://example.com/audio_summary_business1b.mp3"
+            },
+            {
+                "title": "Summary: Cashflow Quadrant",
+                "book_id": books[12].id,
+                "published_date": base_time - timedelta(days=9),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.6,
+                "read_count": 2800,
+                "audio_url": "https://example.com/audio_summary_business2.mp3"
+            },
+            {
+                "title": "Summary: The Lean Startup",
+                "book_id": books[13].id,
+                "published_date": base_time - timedelta(days=7),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.5,
+                "read_count": 2600,
+                "audio_url": "https://example.com/audio_summary_business3.mp3"
+            },
+            # Self Development cluster - multiple summaries for self-help books
+            {
+                "title": "Summary: How to Win Friends & Influence People",
+                "book_id": books[14].id,
+                "published_date": base_time - timedelta(days=14),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.6,
+                "read_count": 3500,
+                "audio_url": "https://example.com/audio_summary_selfdev1.mp3"
+            },
+            {
+                "title": "Complete Guide: How to Win Friends & Influence People",
+                "book_id": books[14].id,
+                "published_date": base_time - timedelta(days=2),
+                "user_id": reader_user.id,
+                "status": "approved",
+                "avg_rating": 4.7,
+                "read_count": 2900,
+                "audio_url": "https://example.com/audio_summary_selfdev1b.mp3"
+            },
+            {
+                "title": "Summary: Atomic Habits",
+                "book_id": books[15].id,
+                "published_date": base_time - timedelta(days=5),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.9,
+                "read_count": 4200,
+                "audio_url": "https://example.com/audio_summary_selfdev2.mp3"
+            },
+            {
+                "title": "Summary: The 7 Habits of Highly Effective People",
+                "book_id": books[16].id,
+                "published_date": base_time - timedelta(days=8),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.8,
+                "read_count": 3800,
+                "audio_url": "https://example.com/audio_summary_selfdev3.mp3"
+            },
+            # Technology cluster - multiple summaries for tech books
+            {
+                "title": "Summary: The Innovator's Dilemma",
+                "book_id": books[17].id,
+                "published_date": base_time - timedelta(days=10),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.7,
+                "read_count": 2400,
+                "audio_url": "https://example.com/audio_summary_tech1.mp3"
+            },
+            {
+                "title": "Summary: Clean Code",
+                "book_id": books[18].id,
+                "published_date": base_time - timedelta(days=6),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.9,
+                "read_count": 3100,
+                "audio_url": "https://example.com/audio_summary_prog1.mp3"
+            },
+            {
+                "title": "Summary: The Pragmatic Programmer",
+                "book_id": books[19].id,
+                "published_date": base_time - timedelta(days=4),
+                "user_id": reader_user.id,
+                "status": "approved",
+                "avg_rating": 4.8,
+                "read_count": 2700,
+                "audio_url": "https://example.com/audio_summary_prog2.mp3"
+            },
+            # History cluster
+            {
+                "title": "Summary: Guns, Germs, and Steel",
+                "book_id": books[20].id,
+                "published_date": base_time - timedelta(days=11),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.6,
+                "read_count": 2200,
+                "audio_url": "https://example.com/audio_summary_history1.mp3"
+            },
+            {
+                "title": "Summary: The Rise and Fall of the Third Reich",
+                "book_id": books[21].id,
+                "published_date": base_time - timedelta(days=7),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.7,
+                "read_count": 1900,
+                "audio_url": "https://example.com/audio_summary_history2.mp3"
+            },
+            # Biography cluster
+            {
+                "title": "Summary: Steve Jobs Biography",
+                "book_id": books[22].id,
+                "published_date": base_time - timedelta(days=9),
+                "user_id": writer_user.id,
+                "status": "approved",
+                "avg_rating": 4.8,
+                "read_count": 3300,
+                "audio_url": "https://example.com/audio_summary_bio1.mp3"
+            },
+            {
+                "title": "Summary: Elon Musk - Tesla, SpaceX, and the Quest",
+                "book_id": books[23].id,
+                "published_date": base_time - timedelta(days=5),
+                "user_id": reader_user.id,
+                "status": "approved",
+                "avg_rating": 4.7,
+                "read_count": 2800,
+                "audio_url": "https://example.com/audio_summary_bio2.mp3"
+            },
+            # Some drafts/editing status summaries
+            {
                 "title": "Summary: How to Win Friends & Influence People (Draft)",
-                "book_id": books[2].id,
+                "book_id": books[14].id,
                 "published_date": None,
                 "user_id": writer_user.id,
                 "status": "editing",
                 "avg_rating": 0,
                 "read_count": 0,
                 "audio_url": None
-            }
+            },
+            {
+                "title": "Summary: Atomic Habits (Work in Progress)",
+                "book_id": books[15].id,
+                "published_date": None,
+                "user_id": reader_user.id,
+                "status": "editing",
+                "avg_rating": 0,
+                "read_count": 0,
+                "audio_url": None
+            },
         ]
         summaries = []
         for summary_data in summaries_data:
@@ -367,29 +979,37 @@ def seed_data():
         
         # 12. Content Sections
         print("📑 Creating Content Sections...")
-        content_sections_data = [
-            {
-                "summary_id": summaries[0].id,
-                "section_order": 1,
-                "title": "Introduction",
-                "content": "This book describes the childhood of children in a rural Vietnamese village...",
-                "audio_segment_url": "https://example.com/audio_segment1.mp3"
-            },
-            {
-                "summary_id": summaries[0].id,
-                "section_order": 2,
-                "title": "Main Characters",
-                "content": "The main character is Thieu, a pure-hearted boy...",
-                "audio_segment_url": "https://example.com/audio_segment2.mp3"
-            },
-            {
-                "summary_id": summaries[1].id,
-                "section_order": 1,
-                "title": "Overview",
-                "content": "Sapiens is a book about the history of humankind from the Stone Age to modernity...",
-                "audio_segment_url": "https://example.com/audio_segment3.mp3"
-            },
-        ]
+        # Add content sections for approved summaries (skip drafts)
+        approved_summaries = [s for s in summaries if s.status == "approved"]
+        content_sections_data = []
+        
+        for idx, summ_obj in enumerate(approved_summaries[:15]):  # Add sections for first 15 approved summaries
+            content_sections_data.extend([
+                {
+                    "summary_id": summ_obj.id,
+                    "section_order": 1,
+                    "title": "Introduction",
+                    "content": f"This summary provides a comprehensive overview of {summ_obj.title}...",
+                    "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_1.mp3"
+                },
+                {
+                    "summary_id": summ_obj.id,
+                    "section_order": 2,
+                    "title": "Key Concepts",
+                    "content": f"The main concepts and ideas presented in {summ_obj.title} are...",
+                    "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_2.mp3"
+                },
+            ])
+            # Add a third section for some summaries
+            if idx < 10:
+                content_sections_data.append({
+                    "summary_id": summ_obj.id,
+                    "section_order": 3,
+                    "title": "Conclusion",
+                    "content": f"In conclusion, {summ_obj.title} offers valuable insights...",
+                    "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_3.mp3"
+                })
+        
         for cs_data in content_sections_data:
             cs = content_section.ContentSection(**cs_data)
             db.add(cs)
@@ -398,29 +1018,38 @@ def seed_data():
         
         # 13. Comments
         print("💬 Creating Comments...")
-        comments_data = [
-            {
-                "summary_id": summaries[0].id,
-                "user_id": writer_user.id,
-                "content": "Excellent and detailed summary!",
-                "parent_comment_id": None,
-                "access": CommentAccess.PUBLIC
-            },
-            {
-                "summary_id": summaries[0].id,
-                "user_id": writer_user.id,
-                "content": "Thank you for sharing!",
-                "parent_comment_id": None,
-                "access": CommentAccess.PUBLIC
-            },
-            {
-                "summary_id": summaries[1].id,
-                "user_id": reader_user.id,
-                "content": "This book truly changed the way I view history.",
-                "parent_comment_id": None,
-                "access": CommentAccess.PUBLIC
-            },
-        ]
+        comments_data = []
+        # Add comments for various summaries
+        approved_summaries = [s for s in summaries if s.status == "approved"]
+        
+        # Add 2-3 comments per summary for first 10 summaries
+        for idx, summ_obj in enumerate(approved_summaries[:10]):
+            comments_data.extend([
+                {
+                    "summary_id": summ_obj.id,
+                    "user_id": writer_user.id if idx % 2 == 0 else reader_user.id,
+                    "content": f"Excellent summary of {summ_obj.title}! Very insightful.",
+                    "parent_comment_id": None,
+                    "access": CommentAccess.PUBLIC
+                },
+                {
+                    "summary_id": summ_obj.id,
+                    "user_id": reader_user.id if idx % 2 == 0 else writer_user.id,
+                    "content": "This helped me understand the key concepts much better. Thank you!",
+                    "parent_comment_id": None,
+                    "access": CommentAccess.PUBLIC
+                },
+            ])
+            # Add a third comment for some summaries
+            if idx < 5:
+                comments_data.append({
+                    "summary_id": summ_obj.id,
+                    "user_id": reader_user.id,
+                    "content": "I highly recommend reading the full book after this summary.",
+                    "parent_comment_id": None,
+                    "access": CommentAccess.PUBLIC
+                })
+        
         for comment_data in comments_data:
             c = comment.Comment(**comment_data)
             db.add(c)
@@ -429,18 +1058,17 @@ def seed_data():
         
         # 14. Admin Comments
         print("👨‍💼 Creating Admin Comments...")
-        admin_comments_data = [
-            {
-                "summary_id": summaries[0].id,
-                "text_content": "Summary has been reviewed and published.",
+        admin_comments_data = []
+        approved_summaries = [s for s in summaries if s.status == "approved"]
+        
+        # Add admin comments for first 8 approved summaries
+        for summ_obj in approved_summaries[:8]:
+            admin_comments_data.append({
+                "summary_id": summ_obj.id,
+                "text_content": f"Summary '{summ_obj.title}' has been reviewed and approved. High-quality content!",
                 "parent_comment_id": None
-            },
-            {
-                "summary_id": summaries[1].id,
-                "text_content": "High-quality content, keep up the good work!",
-                "parent_comment_id": None
-            },
-        ]
+            })
+        
         for ac_data in admin_comments_data:
             ac = admin_comment.AdminComment(**ac_data)
             db.add(ac)

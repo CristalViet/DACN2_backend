@@ -13,6 +13,7 @@ from . import content_section  # noqa: F401
 from . import admin_comment  # noqa: F401
 from . import cart  # noqa: F401
 from . import cart_item  # noqa: F401
+from . import favourite  # noqa: F401
 
 __all__ = [
     "user",
@@ -29,6 +30,7 @@ __all__ = [
     "admin_comment",
     "cart",
     "cart_item",
+    "favourite",
 ]
 
 

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import or_
 from app.database import get_db
 from app import models
+from app.helpers.recommendation import recommend_by_history
 from app.schemas import summary as schema
 from app.schemas import content_section as content_section_schema
 from app.core.deps import get_current_user, require_writer
@@ -62,6 +63,43 @@ def list_summaries(
         query = query.filter(models.summary.Summary.status == status_filter)
     
     return query.all()
+
+@router.get("/recommend/me", response_model=list[schema.SummaryResponse])
+def recommend_for_me(
+    limit: int = 10,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Recommend summaries based on user's favorites using embeddings + cosine similarity.
+    Returns SummaryResponse objects (same as list view).
+    """
+    recs = recommend_by_history(db, current_user.id, top_k=limit)
+    if not recs:
+        # fallback to popular items (same as earlier fallback)
+        return db.query(models.summary.Summary).options(
+            selectinload(Summary.book).selectinload(Book.category),
+            selectinload(Summary.book).selectinload(Book.author),
+            selectinload(Summary.book).selectinload(Book.publisher),
+            selectinload(Summary.user)
+        ).filter(
+            models.summary.Summary.status == "approved"
+        ).order_by(models.summary.Summary.read_count.desc()).limit(limit).all()
+
+    # recs contains summary_id + score; fetch full models preserving order
+    rec_ids = [r["summary_id"] for r in recs]
+    # preserve order using CASE expression or simple in-memory ordering
+    rows = db.query(models.summary.Summary).options(
+        selectinload(Summary.book).selectinload(Book.category),
+        selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Summary.book).selectinload(Book.publisher),
+        selectinload(Summary.user)
+    ).filter(models.summary.Summary.id.in_(rec_ids)).all()
+
+    # order rows to match rec_ids
+    rows_by_id = {r.id: r for r in rows}
+    ordered = [rows_by_id[rid] for rid in rec_ids if rid in rows_by_id]
+    return ordered
 
 
 @router.get("/{summary_id}/content-sections", response_model=list[content_section_schema.ContentSectionResponse])

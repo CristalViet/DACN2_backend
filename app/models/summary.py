@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float, JSON
 from sqlalchemy.sql import func
 from app.database import Base
 from sqlalchemy.orm import relationship
@@ -17,6 +17,8 @@ class Summary(Base):
     audio_url = Column(String(500), nullable=True)
     published_date = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    # new column: store embedding as JSON array
+    embedding = Column(JSON, nullable=True)
 
     book = relationship("Book", back_populates="summaries")
     user = relationship("User", back_populates="summaries")

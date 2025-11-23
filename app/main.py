@@ -15,6 +15,7 @@ from app.routers import content_section as content_section_router
 from app.routers import admin_comment as admin_comment_router
 from app.routers import cart as cart_router
 from app.routers import cart_item as cart_item_router
+from app.routers import favourite as favourite_router
 from fastapi.middleware.cors import CORSMiddleware
 
 # Tự động import tất cả modules trong app.models để đăng ký models vào Base.metadata
@@ -85,3 +86,4 @@ app.include_router(summary_router.router)
 app.include_router(content_section_router.router)
 app.include_router(comment_router.router)
 app.include_router(admin_comment_router.router)
+app.include_router(favourite_router.router)
