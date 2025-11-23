@@ -21,6 +21,7 @@ class UserUpdate(BaseModel):
     bio: str | None = None
     role_id: int | None = None
     is_active: bool | None = None
+    role_id: int | None = None
 
 
 class UserResponse(UserBase):
@@ -31,5 +32,6 @@ class UserResponse(UserBase):
     role_id: int | None = None
     date_joined: datetime
     is_active: bool | None = True
+    role_id: int | None = None
 
     model_config = ConfigDict(from_attributes=True)
