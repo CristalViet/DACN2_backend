@@ -6,7 +6,7 @@ from app import models
 from app.helpers.recommendation import recommend_by_history
 from app.schemas import summary as schema
 from app.schemas import content_section as content_section_schema
-from app.core.deps import get_current_user, require_writer
+from app.core.deps import get_current_user, require_writer, require_admin
 from typing import Optional
 
 # Import models for easier reference in selectinload
@@ -164,6 +164,39 @@ def update_summary(
         selectinload(Summary.user)
     ).filter(models.summary.Summary.id == item.id).first()
     return item
+
+
+@router.patch("/{summary_id}/status", response_model=schema.SummaryResponse)
+def change_summary_status(
+    summary_id: int,
+    payload: schema.SummaryStatusUpdate,
+    current_user = Depends(require_writer),
+    db: Session = Depends(get_db)
+):
+    """Change summary status (Writers limited to their own summaries; admins unrestricted)"""
+    item = db.get(models.summary.Summary, summary_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Summary not found")
+
+    if item.user_id != current_user.id and current_user.role.role_name != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to change status for this summary"
+        )
+
+    item.status = payload.status
+    db.commit()
+    db.refresh(item)
+
+    item = db.query(models.summary.Summary).options(
+        selectinload(Summary.book).selectinload(Book.category),
+        selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Summary.book).selectinload(Book.publisher),
+        selectinload(Summary.user)
+    ).filter(models.summary.Summary.id == item.id).first()
+    return item
+
+
 
 
 @router.delete("/{summary_id}")

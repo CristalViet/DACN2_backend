@@ -24,6 +24,10 @@ class SummaryUpdate(BaseModel):
     audio_url: str | None = None
 
 
+class SummaryStatusUpdate(BaseModel):
+    status: str
+
+
 class BookWithRelationsResponse(BaseModel):
     id: int
     title: str
