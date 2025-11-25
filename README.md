@@ -61,14 +61,15 @@ Tạo file `.env` trong thư mục gốc của project với nội dung:
 
 ```env
 DATABASE_URL=mysql+pymysql://username:password@127.0.0.1:3306/booklearning
-SECRET_KEY=your-secret-key-here
+DB_USER=""
+DB_PASS=""
+DB_NAME=""
 ```
 
 **Lưu ý:**
 
 - Thay `username`, `password` bằng thông tin đăng nhập MySQL của bạn
 - Thay `booklearning` bằng tên database bạn muốn sử dụng
-- `SECRET_KEY` dùng để mã hóa JWT tokens, nên đặt một chuỗi ngẫu nhiên và bảo mật
 
 ### 2. Tạo database
 
@@ -78,10 +79,12 @@ SECRET_KEY=your-secret-key-here
 CREATE DATABASE booklearning CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-Hoặc nếu không có file `.env`, bạn có thể chỉnh sửa trực tiếp trong `app/config.py`:
+Để xóa tạo lại DB:
 
-```python
-DATABASE_URL = "mysql+pymysql://root:your_password@127.0.0.1:3306/booklearning"
+```sql
+DROP DATABASE ten_co_so_du_lieu;
+CREATE DATABASE ten_co_so_du_lieu_moi;
+
 ```
 
 ## 🚀 Chạy server
@@ -140,6 +143,14 @@ alembic current
 
 ## 🌱 Seed Data
 
+Trước khi seed cần xóa và tạo lại db:
+
+```sql
+DROP DATABASE ten_co_so_du_lieu;
+CREATE DATABASE ten_co_so_du_lieu_moi;
+
+```
+
 Để populate database với dữ liệu mẫu, chạy script seed:
 
 ```bash
@@ -162,8 +173,8 @@ Script này sẽ tạo:
 **Thông tin đăng nhập mẫu:**
 
 - Admin: `admin@example.com` / `admin123`
-- User 1: `john@example.com` / `password123`
-- User 2: `jane@example.com` / `password123`
+- User 1: `writer@example.com` / `password123`
+- User 2: `reader@example.com` / `password123`
 
 ## 📚 API Documentation
 

@@ -184,6 +184,11 @@ def delete_summary(
             detail="Not authorized to delete this summary"
         )
     
+    # Remove dependent content sections to avoid FK constraint errors
+    db.query(models.content_section.ContentSection).filter(
+        models.content_section.ContentSection.summary_id == summary_id
+    ).delete(synchronize_session=False)
+
     db.delete(item)
     db.commit()
     return {"deleted": True}

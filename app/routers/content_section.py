@@ -27,6 +27,18 @@ def list_content_sections(db: Session = Depends(get_db)):
     return db.query(models.content_section.ContentSection).all()
 
 
+@router.patch("/sections-order")
+def reorder_content_sections(payload: schema.ContentSectionReorder, db: Session = Depends(get_db)):
+    # Update section_order for each ID based on its position in the array
+    for index, section_id in enumerate(payload.order, start=1):
+        item = db.get(models.content_section.ContentSection, section_id)
+        if not item:
+            raise HTTPException(status_code=404, detail=f"Content section with id {section_id} not found")
+        item.section_order = index
+    db.commit()
+    return {"message": "Sections reordered successfully", "order": payload.order}
+
+
 @router.get("/{content_section_id}", response_model=schema.ContentSectionResponse)
 def get_content_section(content_section_id: int, db: Session = Depends(get_db)):
     item = db.get(models.content_section.ContentSection, content_section_id)
@@ -57,18 +69,6 @@ def patch_content_section(content_section_id: int, payload: schema.ContentSectio
     db.commit()
     db.refresh(item)
     return item
-
-
-@router.patch("/sections-order")
-def reorder_content_sections(payload: schema.ContentSectionReorder, db: Session = Depends(get_db)):
-    # Update section_order for each ID based on its position in the array
-    for index, section_id in enumerate(payload.order, start=1):
-        item = db.get(models.content_section.ContentSection, section_id)
-        if not item:
-            raise HTTPException(status_code=404, detail=f"Content section with id {section_id} not found")
-        item.section_order = index
-    db.commit()
-    return {"message": "Sections reordered successfully", "order": payload.order}
 
 
 @router.delete("/{content_section_id}")

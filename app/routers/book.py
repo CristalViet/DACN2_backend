@@ -31,6 +31,24 @@ def list_books(db: Session = Depends(get_db)):
     return db.query(models.book.Book).all()
 
 
+@router.get("/available", response_model=list[schema.BookResponse])
+def list_books_without_summary(db: Session = Depends(get_db)):
+    """
+    Return books that do not have any summaries yet.
+    Useful for writers when selecting a book to summarize.
+    """
+    books_without_summaries = (
+        db.query(models.book.Book)
+        .outerjoin(
+            models.summary.Summary,
+            models.summary.Summary.book_id == models.book.Book.id,
+        )
+        .filter(models.summary.Summary.id.is_(None))
+        .all()
+    )
+    return books_without_summaries
+
+
 @router.get("/{book_id}", response_model=schema.BookResponse)
 def get_book(book_id: int, db: Session = Depends(get_db)):
     item = db.query(models.book.Book).options(
