@@ -13,4 +13,6 @@ class Favourite(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     summary = relationship("Summary", backref="favourites")
+    user = relationship("User", back_populates="favourites")
+
 

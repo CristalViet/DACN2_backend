@@ -23,3 +23,4 @@ class User(Base):
     summaries = relationship("Summary", back_populates="user")
     comments = relationship("Comment", back_populates="user")
     cart = relationship("Cart", back_populates="user", uselist=False)
+    favourites = relationship("Favourite", back_populates="user")

@@ -1,9 +1,11 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
+from typing import Optional
+from app.schemas.user import UserResponse
+from app.schemas.summary import SummaryResponse
 
 
 class ReadingHistoryCreate(BaseModel):
-    user_id: int
     summary_id: int
     last_section_id: int | None = None
     progress_percent: float = 0
@@ -19,7 +21,7 @@ class ReadingHistoryUpdate(BaseModel):
 
 
 class ReadingHistoryResponse(BaseModel):
-    reading_id: int
+    id: int
     user_id: int
     summary_id: int
     last_section_id: int | None
@@ -27,7 +29,9 @@ class ReadingHistoryResponse(BaseModel):
     time_spent: int
     device_type: str | None
     last_read_date: datetime
+    user: Optional[UserResponse] = None
+    summary: Optional[SummaryResponse] = None
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 

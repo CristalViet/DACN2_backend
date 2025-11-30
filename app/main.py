@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from app.database import engine, Base
 from app.routers import user as user_router
 from app.routers import user_role as role_router
@@ -16,6 +17,7 @@ from app.routers import admin_comment as admin_comment_router
 from app.routers import cart as cart_router
 from app.routers import cart_item as cart_item_router
 from app.routers import favourite as favourite_router
+from app.routers import reading_history as reading_history_router
 from fastapi.middleware.cors import CORSMiddleware
 
 # Tự động import tất cả modules trong app.models để đăng ký models vào Base.metadata
@@ -87,3 +89,7 @@ app.include_router(content_section_router.router)
 app.include_router(comment_router.router)
 app.include_router(admin_comment_router.router)
 app.include_router(favourite_router.router)
+app.include_router(reading_history_router.router)
+
+# Mount static files for serving uploaded images
+app.mount("/static", StaticFiles(directory="static"), name="static")

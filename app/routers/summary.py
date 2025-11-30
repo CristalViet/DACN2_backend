@@ -183,6 +183,14 @@ def change_summary_status(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to change status for this summary"
         )
+    # Prevent writers from changing the status unless the current status is 'editing',
+    # unless the user is an admin (who is always allowed)
+    if current_user.role.role_name != "admin":
+        if payload.status != "editing" and payload.status != "waiting_for_approval":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Writers can only change status to 'editing' or 'waiting_for_approval'"
+            )
 
     item.status = payload.status
     db.commit()
@@ -216,6 +224,7 @@ def delete_summary(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to delete this summary"
         )
+    
     
     # Remove dependent content sections to avoid FK constraint errors
     db.query(models.content_section.ContentSection).filter(
