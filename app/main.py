@@ -1,5 +1,12 @@
 from fastapi import FastAPI
 from app.database import engine, Base
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 from app.routers import user as user_router
 from app.routers import user_role as role_router
 from app.routers import category as category_router

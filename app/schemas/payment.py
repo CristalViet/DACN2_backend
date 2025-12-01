@@ -15,3 +15,10 @@ class PayOSWebhookPayload(BaseModel):
     # We primarily need a reference to order and a status field.
     data: dict
 
+
+class TestWebhookPayload(BaseModel):
+    """Model for testing webhook with PayOS-like payload"""
+    order_id: int
+    status: str = "PAID"  # PAID, PENDING, CANCELLED
+    code: str = "00"  # 00 = success
+    success: bool = True
