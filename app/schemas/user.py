@@ -1,5 +1,8 @@
+from typing import Optional
 from pydantic import BaseModel, EmailStr, ConfigDict
 from datetime import datetime
+
+from app.schemas.user_role import UserRoleResponse
 
 
 class UserBase(BaseModel):
@@ -29,6 +32,18 @@ class UserResponse(UserBase):
     profile_image: str | None = None
     bio: str | None = None
     role_id: int | None = None
+    date_joined: datetime
+    is_active: bool | None = True
+
+    model_config = ConfigDict(from_attributes=True)
+
+class UserWithRoleResponse(UserBase):
+    id: int
+    phone: str | None = None
+    profile_image: str | None = None
+    bio: str | None = None
+    role_id: int | None = None
+    role: Optional[UserRoleResponse] = None  
     date_joined: datetime
     is_active: bool | None = True
 

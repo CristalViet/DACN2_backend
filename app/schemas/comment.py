@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from app.models.comment import CommentAccess
-from app.schemas.user import UserResponse
+from app.schemas.user import UserResponse, UserWithRoleResponse
 
 
 class CommentCreate(BaseModel):
@@ -24,7 +24,7 @@ class CommentResponse(BaseModel):
     content: str
     parent_comment_id: int | None
     access: CommentAccess
-    user: Optional[UserResponse] = None
+    user: Optional[UserWithRoleResponse] = None
     parent_comment: Optional["CommentResponse"] = None
     created_at: datetime
 

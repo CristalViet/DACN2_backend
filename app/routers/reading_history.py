@@ -42,8 +42,8 @@ def create_reading_history(
         # Load with relations
         existing_history = db.query(ReadingHistory).options(
             selectinload(ReadingHistory.user),
-            selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.category),
-            selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.author),
+            selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.categories),
+            selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.authors),
             selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.publisher),
             selectinload(ReadingHistory.summary).selectinload(Summary.user)
         ).filter(ReadingHistory.id == existing_history.id).first()
@@ -66,8 +66,8 @@ def create_reading_history(
     # Load with relations
     item = db.query(ReadingHistory).options(
         selectinload(ReadingHistory.user),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.category),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.author),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.authors),
         selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(ReadingHistory.summary).selectinload(Summary.user)
     ).filter(ReadingHistory.id == item.id).first()
@@ -83,8 +83,8 @@ def get_my_reading_history(
     """Get all reading history for the current user (Authenticated users only)"""
     return db.query(ReadingHistory).options(
         selectinload(ReadingHistory.user),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.category),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.author),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.authors),
         selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(ReadingHistory.summary).selectinload(Summary.user)
     ).filter(
@@ -97,8 +97,8 @@ def list_reading_history(db: Session = Depends(get_db)):
     """Get all reading history with user and summary populated (Admin only - consider adding admin check)"""
     return db.query(ReadingHistory).options(
         selectinload(ReadingHistory.user),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.category),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.author),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.authors),
         selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(ReadingHistory.summary).selectinload(Summary.user)
     ).all()
@@ -113,8 +113,8 @@ def get_reading_history(
     """Get a specific reading history (only if it belongs to current user)"""
     item = db.query(ReadingHistory).options(
         selectinload(ReadingHistory.user),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.category),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.author),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.authors),
         selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(ReadingHistory.summary).selectinload(Summary.user)
     ).filter(ReadingHistory.id == reading_id).first()
@@ -141,8 +141,8 @@ def get_reading_history_by_summary(
     """Get reading history for a specific summary for the current user"""
     item = db.query(ReadingHistory).options(
         selectinload(ReadingHistory.user),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.category),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.author),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.authors),
         selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(ReadingHistory.summary).selectinload(Summary.user)
     ).filter(
@@ -156,7 +156,7 @@ def get_reading_history_by_summary(
     return item
 
 
-@router.put("/{reading_id}", response_model=schema.ReadingHistoryResponse)
+@router.patch("/{reading_id}", response_model=schema.ReadingHistoryResponse)
 def update_reading_history(
     reading_id: int,
     payload: schema.ReadingHistoryUpdate,
@@ -183,8 +183,8 @@ def update_reading_history(
     # Load with relations
     item = db.query(ReadingHistory).options(
         selectinload(ReadingHistory.user),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.category),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.author),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.authors),
         selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(ReadingHistory.summary).selectinload(Summary.user)
     ).filter(ReadingHistory.id == item.id).first()
@@ -216,8 +216,8 @@ def update_reading_history_by_summary(
     # Load with relations
     item = db.query(ReadingHistory).options(
         selectinload(ReadingHistory.user),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.category),
-        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.author),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.authors),
         selectinload(ReadingHistory.summary).selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(ReadingHistory.summary).selectinload(Summary.user)
     ).filter(ReadingHistory.id == item.id).first()

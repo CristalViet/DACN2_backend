@@ -1,4 +1,3 @@
-# app/recommendation.py
 import json
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
@@ -6,83 +5,99 @@ from typing import List, Tuple
 from sqlalchemy.orm import Session
 from app import models
 
-def _load_embeddings_from_db(db: Session) -> Tuple[List[int], np.ndarray]:
-    """
-    Returns (ids_list, vectors_np) for all summaries that have embeddings.
-    """
-    rows = db.query(models.summary.Summary.id, models.summary.Summary.embedding).filter(models.summary.Summary.embedding.isnot(None), models.summary.Summary.status == "approved").all()
+
+# ------------------------------
+# 1. Load item embeddings
+# ------------------------------
+def _load_embeddings_from_db(db: Session):
+    rows = db.query(
+        models.summary.Summary.id,
+        models.summary.Summary.embedding
+    ).filter(
+        models.summary.Summary.embedding.isnot(None),
+        models.summary.Summary.status == "approved"
+    ).all()
+
     ids = []
     vectors = []
-    for r in rows:
-        sid, emb = r
+
+    for sid, emb in rows:
         try:
-            if isinstance(emb, str):
-                vec = json.loads(emb)
-            else:
-                vec = emb  # JSON column might already be list
+            vec = json.loads(emb) if isinstance(emb, str) else emb
             ids.append(sid)
             vectors.append(vec)
-        except Exception:
+        except:
             continue
+
     if not vectors:
         return [], np.zeros((0, ))
-    vectors_np = np.array(vectors, dtype=np.float32)
-    return ids, vectors_np
 
-def _compute_user_vector(db: Session, user_id: int) -> np.ndarray:
-    """
-    Average embeddings of the summaries the user favourited.
-    """
-    favourites = db.query(models.favourite.Favourite.summary_id).filter(models.favourite.Favourite.user_id == user_id).all()
-    fav_ids = [f[0] for f in favourites]
+    return ids, np.array(vectors, dtype=np.float32)
+
+
+# ------------------------------
+# 2. Compute user vector (avg embedding)
+# ------------------------------
+def _compute_user_vector(db: Session, user_id: int):
+    fav_ids = [
+        f[0] for f in db.query(models.favourite.Favourite.summary_id)
+        .filter(models.favourite.Favourite.user_id == user_id)
+        .all()
+    ]
+
     if not fav_ids:
-        return None
-    rows = db.query(models.summary.Summary.embedding).filter(models.summary.Summary.id.in_(fav_ids), models.summary.Summary.embedding.isnot(None)).all()
+        return None, []
+
+    rows = db.query(models.summary.Summary.embedding).filter(
+        models.summary.Summary.id.in_(fav_ids),
+        models.summary.Summary.embedding.isnot(None)
+    ).all()
+
     vecs = []
     for (emb,) in rows:
         try:
-            if isinstance(emb, str):
-                vec = json.loads(emb)
-            else:
-                vec = emb
-            vecs.append(vec)
-        except Exception:
+            vecs.append(json.loads(emb) if isinstance(emb, str) else emb)
+        except:
             continue
+
     if not vecs:
-        return None
-    return np.mean(np.array(vecs, dtype=np.float32), axis=0).reshape(1, -1)
+        return None, fav_ids
 
-def recommend_by_history(db: Session, user_id: int, top_k: int = 10, exclude_favourites: bool = True):
-    """
-    Returns list of summary ids sorted by similarity to user's avg vector.
-    """
-    user_vec = _compute_user_vector(db, user_id)
-    if user_vec is None:
-        return []  # No favourites or no embeddings
+    user_vec = np.mean(np.array(vecs, dtype=np.float32), axis=0)
+    return user_vec.reshape(1, -1), fav_ids
 
-    ids, vectors = _load_embeddings_from_db(db)
-    if vectors.size == 0:
+
+# ------------------------------
+# 3. Recommend 
+# ------------------------------
+def recommend_by_history(db: Session, user_id: int, top_k: int = 10):
+    # Load embeddings
+    item_ids, item_vectors = _load_embeddings_from_db(db)
+    if item_vectors.size == 0:
         return []
 
-    # Normalize vectors (cosine similarity via dot product after normalization)
-    def normalize(a):
-        norms = np.linalg.norm(a, axis=1, keepdims=True)
-        norms[norms == 0] = 1
-        return a / norms
+    # Load user vector
+    user_vec, fav_ids = _compute_user_vector(db, user_id)
+    if user_vec is None:
+        return []
 
-    user_vec_norm = normalize(user_vec)
-    vectors_norm = normalize(vectors)
+    # Compute cosine similarity
+    sims = cosine_similarity(user_vec, item_vectors)[0]  # shape: (N,)
 
-    sims = (vectors_norm @ user_vec_norm.T).squeeze()  # dot-products (cosine)
-    top_idx = np.argsort(sims)[-top_k:][::-1]
+    # Remove all favourites (same as Kaggle: train set removed)
+    index_map = {item_ids[i]: i for i in range(len(item_ids))}
+    for fid in fav_ids:
+        if fid in index_map:
+            sims[index_map[fid]] = -1e9
 
-    # Map back to ids
-    recommended = []
+    # Top-K sort
+    top_idx = sims.argsort()[::-1][:top_k]
+
+    results = []
     for idx in top_idx:
-        recommended.append({"summary_id": ids[idx], "score": float(sims[idx])})
-    # Optionally exclude already favourited
-    if exclude_favourites:
-        favs = set(fav[0] for fav in db.query(models.favourite.Favourite.summary_id).filter(models.favourite.Favourite.user_id == user_id).all())
-        recommended = [r for r in recommended if r["summary_id"] not in favs]
-        # if filtered out reduce list or fetch additional items as fallback (not implemented here)
-    return recommended
+        results.append({
+            "summary_id": item_ids[idx],
+            "score": float(sims[idx])
+        })
+
+    return results

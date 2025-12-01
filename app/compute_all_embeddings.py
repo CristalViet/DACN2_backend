@@ -1,49 +1,34 @@
 # scripts/precompute_embeddings.py
+import sys
 import os
-import json
-from sentence_transformers import SentenceTransformer
-import mysql.connector
-from mysql.connector import Error
+from pathlib import Path
+
+# Add project root to Python path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+from app.database import SessionLocal
+from app import models
+from app.helpers.embedding import update_summary_embedding
 from tqdm import tqdm
 
-MODEL_NAME = os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2")
-
-def get_db_connection():
-    return mysql.connector.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        user=os.getenv("DB_USER", "dacn2_user"),
-        password=os.getenv("DB_PASS", "StrongP@ssw0rd123"),
-        database=os.getenv("DB_NAME", "dacn2_db"),
-        autocommit=False
-    )
-
 def main():
-    model = SentenceTransformer(MODEL_NAME)
-    db = get_db_connection()
-    cursor = db.cursor(buffered=True)
-
-    cursor.execute("SELECT id, title, COALESCE((SELECT GROUP_CONCAT(content SEPARATOR ' ') FROM content_sections WHERE summary_id = summaries.id), '') as full_text FROM summaries")
-    rows = cursor.fetchall()
-
-    for row in tqdm(rows):
-        summary_id = row[0]
-        title = row[1] or ""
-        text = row[2] or ""
-        # Combine title + content for embedding
-        doc_text = (title + "\n" + text).strip()
-        if not doc_text:
-            continue
-        vec = model.encode(doc_text, show_progress_bar=False).tolist()
-        vec_json = json.dumps(vec)
-        try:
-            cursor.execute("UPDATE summaries SET embedding = %s WHERE id = %s", (vec_json, summary_id))
-        except Error as e:
-            print("DB error:", e)
-            db.rollback()
-    db.commit()
-    cursor.close()
-    db.close()
-    print("Done precomputing embeddings.")
+    db = SessionLocal()
+    try:
+        # Get all summaries
+        summaries = db.query(models.summary.Summary).all()
+        
+        for summary in tqdm(summaries):
+            try:
+                update_summary_embedding(db, summary)
+            except Exception as e:
+                print(f"Error processing summary {summary.id}: {e}")
+                db.rollback()
+                continue
+        
+        print("Done precomputing embeddings.")
+    finally:
+        db.close()
 
 if __name__ == "__main__":
     main()

@@ -45,8 +45,8 @@ def create_favourite(
     
     # Load summary with relations
     item = db.query(Favourite).options(
-        selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.category),
-        selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.authors),
         selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(Favourite.summary).selectinload(Summary.user)
     ).filter(Favourite.id == item.id).first()
@@ -61,8 +61,8 @@ def get_my_favourites(
 ):
     """Get all favourites for the current user (Authenticated users only)"""
     favourites = db.query(Favourite).options(
-        selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.category),
-        selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.authors),
         selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(Favourite.summary).selectinload(Summary.user)
     ).filter(
@@ -80,8 +80,8 @@ def get_favourite(
 ):
     """Get a specific favourite (only if it belongs to current user)"""
     item = db.query(Favourite).options(
-        selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.category),
-        selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.authors),
         selectinload(Favourite.summary).selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(Favourite.summary).selectinload(Summary.user)
     ).filter(Favourite.id == favourite_id).first()

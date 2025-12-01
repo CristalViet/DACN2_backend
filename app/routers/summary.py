@@ -4,6 +4,7 @@ from sqlalchemy import or_
 from app.database import get_db
 from app import models
 from app.helpers.recommendation import recommend_by_history
+from app.helpers.embedding import update_summary_embedding
 from app.schemas import summary as schema
 from app.schemas import content_section as content_section_schema
 from app.core.deps import get_current_user, require_writer, require_admin
@@ -11,7 +12,7 @@ from typing import Optional
 
 # Import models for easier reference in selectinload
 from app.models.summary import Summary
-from app.models.book import Book
+from app.models.book import Book, book_author, book_category
 from app.models.user import User
 
 router = APIRouter(prefix="/summaries", tags=["Summaries"])
@@ -38,8 +39,8 @@ def create_summary(
     db.refresh(item)
     # Eager load book and user relationships
     item = db.query(models.summary.Summary).options(
-        selectinload(Summary.book).selectinload(Book.category),
-        selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(Summary.book).selectinload(Book.authors),
         selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(Summary.user)
     ).filter(models.summary.Summary.id == item.id).first()
@@ -53,8 +54,8 @@ def list_summaries(
 ):
     """Get all summaries with optional status filter (Public access)"""
     query = db.query(models.summary.Summary).options(
-        selectinload(Summary.book).selectinload(Book.category),
-        selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(Summary.book).selectinload(Book.authors),
         selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(Summary.user)
     )
@@ -78,8 +79,8 @@ def recommend_for_me(
     if not recs:
         # fallback to popular items (same as earlier fallback)
         return db.query(models.summary.Summary).options(
-            selectinload(Summary.book).selectinload(Book.category),
-            selectinload(Summary.book).selectinload(Book.author),
+            selectinload(Summary.book).selectinload(Book.categories),
+            selectinload(Summary.book).selectinload(Book.authors),
             selectinload(Summary.book).selectinload(Book.publisher),
             selectinload(Summary.user)
         ).filter(
@@ -90,8 +91,8 @@ def recommend_for_me(
     rec_ids = [r["summary_id"] for r in recs]
     # preserve order using CASE expression or simple in-memory ordering
     rows = db.query(models.summary.Summary).options(
-        selectinload(Summary.book).selectinload(Book.category),
-        selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(Summary.book).selectinload(Book.authors),
         selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(Summary.user)
     ).filter(models.summary.Summary.id.in_(rec_ids)).all()
@@ -122,8 +123,8 @@ def get_summary_content_sections(summary_id: int, db: Session = Depends(get_db))
 def get_summary(summary_id: int, db: Session = Depends(get_db)):
     """Get a specific summary (Public access)"""
     item = db.query(models.summary.Summary).options(
-        selectinload(Summary.book).selectinload(Book.category),
-        selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(Summary.book).selectinload(Book.authors),
         selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(Summary.user)
     ).filter(models.summary.Summary.id == summary_id).first()
@@ -158,8 +159,8 @@ def update_summary(
     db.refresh(item)
     # Reload with book and user relationships
     item = db.query(models.summary.Summary).options(
-        selectinload(Summary.book).selectinload(Book.category),
-        selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(Summary.book).selectinload(Book.authors),
         selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(Summary.user)
     ).filter(models.summary.Summary.id == item.id).first()
@@ -193,12 +194,22 @@ def change_summary_status(
             )
 
     item.status = payload.status
+    
+    # If status is being changed to "approved", compute and update the embedding
+    if payload.status == "approved":
+        try:
+            update_summary_embedding(db, item, commit=False)
+        except Exception as e:
+            # If embedding fails, log warning but continue with status change
+            print(f"Warning: Failed to update embedding for summary {summary_id}: {e}")
+    
+    # Commit the status change (and embedding if it was updated)
     db.commit()
     db.refresh(item)
 
     item = db.query(models.summary.Summary).options(
-        selectinload(Summary.book).selectinload(Book.category),
-        selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(Summary.book).selectinload(Book.authors),
         selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(Summary.user)
     ).filter(models.summary.Summary.id == item.id).first()
@@ -246,8 +257,8 @@ def search_approved_summaries(
 ):
     """Search approved summaries (Public access)"""
     query = db.query(models.summary.Summary).options(
-        selectinload(Summary.book).selectinload(Book.category),
-        selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(Summary.book).selectinload(Book.authors),
         selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(Summary.user)
     ).filter(
@@ -257,7 +268,10 @@ def search_approved_summaries(
     # Search by title or book title/author if query provided
     if q:
         search_term = f"%{q}%"
-        query = query.outerjoin(Book).outerjoin(models.author.Author).filter(
+        # Join through the many-to-many relationship
+        query = query.outerjoin(Book).outerjoin(
+            book_author
+        ).outerjoin(models.author.Author).filter(
             or_(
                 models.summary.Summary.title.ilike(search_term),
                 Book.title.ilike(search_term),
@@ -267,8 +281,10 @@ def search_approved_summaries(
     
     # Filter by category if provided (through book)
     if category_id:
-        query = query.join(Book).filter(
-            Book.category_id == category_id
+        query = query.join(Book).join(
+            book_category
+        ).filter(
+            book_category.c.category_id == category_id
         )
     
     # Apply pagination
@@ -285,8 +301,8 @@ def get_my_summaries(
 ):
     """Get summaries written by current user (Authenticated users only)"""
     query = db.query(models.summary.Summary).options(
-        selectinload(Summary.book).selectinload(Book.category),
-        selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(Summary.book).selectinload(Book.authors),
         selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(Summary.user)
     ).filter(
@@ -307,8 +323,8 @@ def get_writer_summaries(
 ):
     """Get summaries written by a specific writer (Public access)"""
     query = db.query(models.summary.Summary).options(
-        selectinload(Summary.book).selectinload(Book.category),
-        selectinload(Summary.book).selectinload(Book.author),
+        selectinload(Summary.book).selectinload(Book.categories),
+        selectinload(Summary.book).selectinload(Book.authors),
         selectinload(Summary.book).selectinload(Book.publisher),
         selectinload(Summary.user)
     ).filter(

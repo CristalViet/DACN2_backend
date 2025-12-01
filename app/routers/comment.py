@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session, selectinload, aliased
-from sqlalchemy import or_
+from sqlalchemy import or_, and_, not_
 from app.database import get_db
 from app import models
 from app.schemas import comment as schema
@@ -38,6 +38,47 @@ def create_comment(
 def list_comments(db: Session = Depends(get_db)):
     """Get all comments (Public access)"""
     return db.query(models.comment.Comment).all()
+
+
+@router.get("/summary/{summary_id}", response_model=list[schema.CommentResponse])
+def get_comments_by_summary(
+    summary_id: int,
+    db: Session = Depends(get_db)
+):
+    """Get all comments for a specific summary that are not related to admin (Public access)"""
+    # Create aliases for parent comment joins
+    parent_comment = aliased(Comment)
+    parent_user = aliased(User)
+    parent_role = aliased(UserRole)
+    comment_user = aliased(User)
+    comment_role = aliased(UserRole)
+    
+    query = db.query(Comment).options(
+        selectinload(Comment.user).selectinload(User.role),
+        selectinload(Comment.parent_comment).selectinload(Comment.user).selectinload(User.role)
+    ).join(
+        comment_user, Comment.user_id == comment_user.id
+    ).join(
+        comment_role, comment_user.role_id == comment_role.id
+    ).outerjoin(
+        parent_comment, Comment.parent_comment_id == parent_comment.id
+    ).outerjoin(
+        parent_user, parent_comment.user_id == parent_user.id
+    ).outerjoin(
+        parent_role, parent_user.role_id == parent_role.id
+    ).filter(
+        Comment.summary_id == summary_id
+    ).filter(
+        and_(
+            comment_role.role_name != "admin",
+            or_(
+                parent_role.role_name.is_(None),
+                parent_role.role_name != "admin"
+            )
+        )
+    )
+    
+    return query.all()
 
 
 @router.get("/admin-related", response_model=list[schema.CommentResponse])

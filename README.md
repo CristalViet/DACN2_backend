@@ -157,6 +157,12 @@ CREATE DATABASE ten_co_so_du_lieu_moi;
 python seed_data.py
 ```
 
+Render all embedding
+
+```bash
+python ./app/compute_all_embeddings.py
+```
+
 Script này sẽ tạo:
 
 - 2 User Roles (admin, user)

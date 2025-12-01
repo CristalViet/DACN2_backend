@@ -12,6 +12,6 @@ class Author(Base):
     nationality = Column(String(100), nullable=True)
     biography = Column(Text, nullable=True)
 
-    books = relationship("Book", back_populates="author")
+    books = relationship("Book", secondary="book_author", back_populates="authors")
 
 

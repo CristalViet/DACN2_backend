@@ -279,8 +279,8 @@ def seed_data():
             # Novel cluster
             {
                 "title": "Yellow Flowers on the Green Grass",
-                "category_id": categories[0].id,  # Novel
-                "author_id": authors[0].id,
+                "category_ids": [categories[0].id],  # Novel
+                "author_ids": [authors[0].id],
                 "publisher_id": publishers[0].id,
                 "publish_date": date(2010, 1, 1),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -289,8 +289,8 @@ def seed_data():
             },
             {
                 "title": "The Book Thief",
-                "category_id": categories[0].id,  # Novel
-                "author_id": authors[0].id,
+                "category_ids": [categories[0].id],  # Novel
+                "author_ids": [authors[0].id],
                 "publisher_id": publishers[1].id,
                 "publish_date": date(2005, 1, 1),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -299,8 +299,8 @@ def seed_data():
             },
             {
                 "title": "The Shining",
-                "category_id": categories[6].id,  # Fiction
-                "author_id": authors[3].id,
+                "category_ids": [categories[6].id],  # Fiction
+                "author_ids": [authors[3].id],
                 "publisher_id": publishers[4].id,
                 "publish_date": date(1977, 1, 28),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -309,8 +309,8 @@ def seed_data():
             },
             {
                 "title": "Harry Potter and the Philosopher's Stone",
-                "category_id": categories[6].id,  # Fiction
-                "author_id": authors[4].id,
+                "category_ids": [categories[6].id],  # Fiction
+                "author_ids": [authors[4].id],
                 "publisher_id": publishers[5].id,
                 "publish_date": date(1997, 6, 26),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -320,8 +320,8 @@ def seed_data():
             # Science cluster
             {
                 "title": "Sapiens: A Brief History of Humankind",
-                "category_id": categories[1].id,  # Science
-                "author_id": authors[1].id,
+                "category_ids": [categories[1].id],  # Science
+                "author_ids": [authors[1].id],
                 "publisher_id": publishers[3].id,
                 "publish_date": date(2011, 1, 1),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -330,8 +330,8 @@ def seed_data():
             },
             {
                 "title": "Homo Deus: A Brief History of Tomorrow",
-                "category_id": categories[1].id,  # Science
-                "author_id": authors[1].id,
+                "category_ids": [categories[1].id],  # Science
+                "author_ids": [authors[1].id],
                 "publisher_id": publishers[3].id,
                 "publish_date": date(2015, 1, 1),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -340,8 +340,8 @@ def seed_data():
             },
             {
                 "title": "21 Lessons for the 21st Century",
-                "category_id": categories[1].id,  # Science
-                "author_id": authors[1].id,
+                "category_ids": [categories[1].id],  # Science
+                "author_ids": [authors[1].id],
                 "publisher_id": publishers[3].id,
                 "publish_date": date(2018, 8, 30),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -351,8 +351,8 @@ def seed_data():
             # Psychology cluster
             {
                 "title": "Thinking, Fast and Slow",
-                "category_id": categories[7].id,  # Psychology
-                "author_id": authors[5].id,
+                "category_ids": [categories[7].id],  # Psychology
+                "author_ids": [authors[5].id],
                 "publisher_id": publishers[4].id,
                 "publish_date": date(2011, 10, 25),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -361,8 +361,8 @@ def seed_data():
             },
             {
                 "title": "Outliers: The Story of Success",
-                "category_id": categories[7].id,  # Psychology
-                "author_id": authors[6].id,
+                "category_ids": [categories[7].id],  # Psychology
+                "author_ids": [authors[6].id],
                 "publisher_id": publishers[4].id,
                 "publish_date": date(2008, 11, 18),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -371,8 +371,8 @@ def seed_data():
             },
             {
                 "title": "Blink: The Power of Thinking Without Thinking",
-                "category_id": categories[7].id,  # Psychology
-                "author_id": authors[6].id,
+                "category_ids": [categories[7].id],  # Psychology
+                "author_ids": [authors[6].id],
                 "publisher_id": publishers[4].id,
                 "publish_date": date(2005, 1, 11),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -381,8 +381,8 @@ def seed_data():
             },
             {
                 "title": "The Tipping Point",
-                "category_id": categories[7].id,  # Psychology
-                "author_id": authors[6].id,
+                "category_ids": [categories[7].id],  # Psychology
+                "author_ids": [authors[6].id],
                 "publisher_id": publishers[4].id,
                 "publish_date": date(2000, 3, 1),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -392,8 +392,8 @@ def seed_data():
             # Business cluster
             {
                 "title": "Rich Dad Poor Dad",
-                "category_id": categories[3].id,  # Business
-                "author_id": authors[7].id,
+                "category_ids": [categories[3].id],  # Business
+                "author_ids": [authors[7].id],
                 "publisher_id": publishers[6].id,
                 "publish_date": date(1997, 4, 1),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -402,8 +402,8 @@ def seed_data():
             },
             {
                 "title": "Cashflow Quadrant",
-                "category_id": categories[3].id,  # Business
-                "author_id": authors[7].id,
+                "category_ids": [categories[3].id],  # Business
+                "author_ids": [authors[7].id],
                 "publisher_id": publishers[6].id,
                 "publish_date": date(1998, 1, 1),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -412,8 +412,8 @@ def seed_data():
             },
             {
                 "title": "The Lean Startup",
-                "category_id": categories[3].id,  # Business
-                "author_id": authors[12].id,  # Eric Ries
+                "category_ids": [categories[3].id],  # Business
+                "author_ids": [authors[12].id],  # Eric Ries
                 "publisher_id": publishers[4].id,
                 "publish_date": date(2011, 9, 13),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -423,8 +423,8 @@ def seed_data():
             # Self Development cluster
             {
                 "title": "How to Win Friends & Influence People",
-                "category_id": categories[4].id,  # Self Development
-                "author_id": authors[2].id,
+                "category_ids": [categories[4].id],  # Self Development
+                "author_ids": [authors[2].id],
                 "publisher_id": publishers[3].id,
                 "publish_date": date(1936, 1, 1),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -433,8 +433,8 @@ def seed_data():
             },
             {
                 "title": "Atomic Habits",
-                "category_id": categories[4].id,  # Self Development
-                "author_id": authors[11].id,
+                "category_ids": [categories[4].id],  # Self Development
+                "author_ids": [authors[11].id],
                 "publisher_id": publishers[4].id,
                 "publish_date": date(2018, 10, 16),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -443,8 +443,8 @@ def seed_data():
             },
             {
                 "title": "The 7 Habits of Highly Effective People",
-                "category_id": categories[4].id,  # Self Development
-                "author_id": authors[19].id,  # Stephen Covey
+                "category_ids": [categories[4].id],  # Self Development
+                "author_ids": [authors[19].id],  # Stephen Covey
                 "publisher_id": publishers[3].id,
                 "publish_date": date(1989, 8, 15),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -454,8 +454,8 @@ def seed_data():
             # Technology cluster
             {
                 "title": "The Innovator's Dilemma",
-                "category_id": categories[5].id,  # Technology
-                "author_id": authors[15].id,  # Clayton Christensen
+                "category_ids": [categories[5].id],  # Technology
+                "author_ids": [authors[15].id],  # Clayton Christensen
                 "publisher_id": publishers[4].id,
                 "publish_date": date(1997, 1, 1),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -464,8 +464,8 @@ def seed_data():
             },
             {
                 "title": "Clean Code",
-                "category_id": categories[11].id,  # Programming
-                "author_id": authors[13].id,  # Robert C. Martin
+                "category_ids": [categories[11].id],  # Programming
+                "author_ids": [authors[13].id],  # Robert C. Martin
                 "publisher_id": publishers[7].id,
                 "publish_date": date(2008, 8, 11),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -474,8 +474,8 @@ def seed_data():
             },
             {
                 "title": "The Pragmatic Programmer",
-                "category_id": categories[11].id,  # Programming
-                "author_id": authors[14].id,  # Andrew Hunt
+                "category_ids": [categories[11].id],  # Programming
+                "author_ids": [authors[14].id],  # Andrew Hunt
                 "publisher_id": publishers[7].id,
                 "publish_date": date(1999, 10, 20),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -485,8 +485,8 @@ def seed_data():
             # History cluster
             {
                 "title": "Guns, Germs, and Steel",
-                "category_id": categories[2].id,  # History
-                "author_id": authors[16].id,  # Jared Diamond
+                "category_ids": [categories[2].id],  # History
+                "author_ids": [authors[16].id],  # Jared Diamond
                 "publisher_id": publishers[3].id,
                 "publish_date": date(1997, 3, 1),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -495,8 +495,8 @@ def seed_data():
             },
             {
                 "title": "The Rise and Fall of the Third Reich",
-                "category_id": categories[2].id,  # History
-                "author_id": authors[17].id,  # William L. Shirer
+                "category_ids": [categories[2].id],  # History
+                "author_ids": [authors[17].id],  # William L. Shirer
                 "publisher_id": publishers[3].id,
                 "publish_date": date(1960, 10, 17),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -506,8 +506,8 @@ def seed_data():
             # Biography cluster
             {
                 "title": "Steve Jobs",
-                "category_id": categories[9].id,  # Biography
-                "author_id": authors[10].id,  # Walter Isaacson
+                "category_ids": [categories[9].id],  # Biography
+                "author_ids": [authors[10].id],  # Walter Isaacson
                 "publisher_id": publishers[4].id,
                 "publish_date": date(2011, 10, 24),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -516,8 +516,8 @@ def seed_data():
             },
             {
                 "title": "Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future",
-                "category_id": categories[9].id,  # Biography
-                "author_id": authors[18].id,  # Ashlee Vance
+                "category_ids": [categories[9].id],  # Biography
+                "author_ids": [authors[18].id],  # Ashlee Vance
                 "publisher_id": publishers[4].id,
                 "publish_date": date(2015, 5, 19),
                 "cover_image": "https://via.placeholder.com/300x400",
@@ -527,8 +527,21 @@ def seed_data():
         ]
         books = []
         for book_data in books_data:
+            # Extract many-to-many relationship data
+            category_ids = book_data.pop("category_ids", [])
+            author_ids = book_data.pop("author_ids", [])
+            
+            # Create book with remaining data
             b = book.Book(**book_data)
             db.add(b)
+            db.flush()  # Flush to get the book ID
+            
+            # Set many-to-many relationships
+            if category_ids:
+                b.categories = [cat for cat in categories if cat.id in category_ids]
+            if author_ids:
+                b.authors = [auth for auth in authors if auth.id in author_ids]
+            
             books.append(b)
         db.commit()
         for b in books:

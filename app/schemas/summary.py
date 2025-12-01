@@ -35,8 +35,8 @@ class BookWithRelationsResponse(BaseModel):
     cover_image: str | None = None
     price: Decimal
     stock_quantity: int = 0
-    category: CategoryResponse | None = None
-    author: AuthorResponse | None = None
+    categories: list[CategoryResponse] = []
+    authors: list[AuthorResponse] = []
     publisher: PublisherResponse | None = None
 
     model_config = ConfigDict(from_attributes=True)
