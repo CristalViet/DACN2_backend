@@ -5,6 +5,7 @@ from app.schemas.payment import (
     CreatePaymentSessionRequest,
     CreatePaymentSessionResponse,
     PayOSWebhookPayload,
+    TestWebhookPayload,
 )
 from app.models.order import Order, PaymentStatus
 from app.config import (
@@ -19,6 +20,10 @@ from payos.types import CreatePaymentLinkRequest
 import hmac
 import hashlib
 from decimal import Decimal
+import logging
+import json
+
+logger = logging.getLogger(__name__)
 
 
 router = APIRouter(prefix="/payments", tags=["Payments"])
@@ -145,82 +150,231 @@ async def payos_webhook(
 ):
     """
     Webhook to receive payment status updates from PayOS.
-    Must be publicly accessible by PayOS.
+    Uses official PayOS SDK webhooks.verify for validation, per docs:
+    https://payos.vn/docs/sdks/back-end/python
     """
     _ensure_payos_config()
+    if payos_client is None:
+        raise HTTPException(status_code=500, detail="PayOS client failed to initialize")
 
+    # Read raw body once
     raw = await request.body()
-    signature = (
-        request.headers.get("x-signature")
-        or request.headers.get("x-payos-signature")
-        or request.headers.get("x-webhook-signature")
-        or request.headers.get("X-PayOS-Signature")
-        or ""
-    )
-    if not _verify_signature(raw, signature):
-        # Fallback: some integrations include signature in body alongside 'data'
-        try:
-            payload = await request.json()
-        except Exception:
-            raise HTTPException(status_code=400, detail="Invalid signature")
-        inline_sig = ""
-        try:
-            inline_sig = str(payload.get("signature") or "")
-        except Exception:
-            inline_sig = ""
-        if inline_sig:
-            # Verify HMAC over the 'data' object JSON (canonicalized)
-            import json as _json
+    logger.info(f"Webhook received, body length: {len(raw)}")
 
-            try:
-                data_section = payload.get("data", {})
-                serialized = _json.dumps(
-                    data_section, ensure_ascii=False, separators=(",", ":"), sort_keys=True
-                ).encode("utf-8")
-                computed = hmac.new(
-                    PAYOS_CHECKSUM_KEY.encode(), serialized, hashlib.sha256
-                ).hexdigest()
-                if not hmac.compare_digest(computed, inline_sig):
-                    raise HTTPException(status_code=400, detail="Invalid signature")
-            except Exception:
-                raise HTTPException(status_code=400, detail="Invalid signature")
-        else:
-            raise HTTPException(status_code=400, detail="Invalid signature")
+    # Let PayOS SDK verify signature & parse payload
+    try:
+        webhook_data = payos_client.webhooks.verify(raw)
+        # webhook_data is a typed object; log as dict/string for debugging
+        logger.info(f"Verified PayOS webhook: {webhook_data}")
+    except Exception as e:
+        logger.error(f"Invalid PayOS webhook: {e}")
+        raise HTTPException(status_code=400, detail="Invalid webhook")
 
-    payload = await request.json()
-    body = payload.get("data") if isinstance(payload, dict) else None
-    if not body:
-        raise HTTPException(status_code=400, detail="Invalid payload")
-
-    # Resolve order id from common fields (prefer orderCode)
-    reference_id = (
-        body.get("orderCode")
-        or body.get("referenceId")
-        or body.get("order_id")
-        or body.get("orderId")
-    )
-    if not reference_id:
+    # Resolve order id from official field name `order_code`
+    order_code = getattr(webhook_data, "order_code", None)
+    if order_code is None:
+        # Fallback: try common alternatives on data if present
+        data = getattr(webhook_data, "data", None)
+        order_code = None
+        if isinstance(data, dict):
+            order_code = (
+                data.get("orderCode")
+                or data.get("order_id")
+                or data.get("orderId")
+            )
+    if order_code is None:
+        logger.error(f"Missing order_code in webhook data: {webhook_data}")
         raise HTTPException(status_code=400, detail="Missing order reference")
 
-    order = db.get(Order, int(reference_id))
+    logger.info(f"Processing webhook for order: {order_code}")
+
+    order = db.get(Order, int(order_code))
     if not order:
-        raise HTTPException(status_code=404, detail="Order not found")
+        # Trường hợp phổ biến khi PayOS chỉ gửi webhook test để kiểm tra URL,
+        # orderCode có thể là số demo (ví dụ 123) không tồn tại trong hệ thống.
+        # Để PayOS chấp nhận webhook URL, ta vẫn trả về 200 OK và chỉ log lại.
+        logger.warning(
+            f"Order not found for webhook order_code={order_code}. "
+            "This may be a PayOS test/verification call. Ignoring update."
+        )
+        return {
+            "ok": True,
+            "ignored": True,
+            "reason": "Order not found for given order_code",
+        }
 
-    status_text = str(body.get("status") or payload.get("status") or "").lower()
-    code_text = str(body.get("code") or payload.get("code") or "")
-    success_flag = body.get("success") if "success" in body else payload.get("success")
+    # Extract status info according to PayOS docs
+    code = getattr(webhook_data, "code", None)
+    success = getattr(webhook_data, "success", None)
 
-    # Treat completed on any of these conditions:
-    # - success_flag is True
-    # - code is "00" (common success code)
-    # - status text indicates success
-    if success_flag is True or code_text in ("00", "0") or status_text in ("success", "paid", "completed"):
+    # Some integrations put detailed status in data
+    data = getattr(webhook_data, "data", None)
+    status_text = ""
+    if isinstance(data, dict):
+        status_text = str(data.get("status") or "").lower()
+        if code is None:
+            code = data.get("code")
+
+    logger.info(
+        f"Webhook status info - code: {code}, success: {success}, status_text: {status_text}"
+    )
+    logger.info(f"Order {order.id} - Current status: {order.payment_status.value}")
+
+    old_status = order.payment_status.value
+
+    # Success rules per PayOS: success==True or code "00"
+    if success is True or str(code) in ("00", "0") or status_text in (
+        "success",
+        "paid",
+        "completed",
+    ):
         order.payment_status = PaymentStatus.COMPLETED
-    # Treat failed on explicit failure indicators
-    elif success_flag is False or status_text in ("failed", "cancelled", "canceled"):
+        logger.info(f"Order {order.id} payment status updated: {old_status} -> completed")
+    else:
+        # Treat all non-success as failed, you can refine if needed
         order.payment_status = PaymentStatus.FAILED
-    # else ignore unexpected statuses to keep idempotency
+        logger.info(f"Order {order.id} payment status updated: {old_status} -> failed")
 
     db.commit()
+    db.refresh(order)
+    logger.info(f"Order {order.id} final status: {order.payment_status.value}")
+
     return {"ok": True}
+
+
+@router.post("/webhook/test/")
+async def test_webhook(
+    payload: TestWebhookPayload,
+    db: Session = Depends(get_db),
+):
+    """
+    Test endpoint to simulate PayOS webhook call.
+    This helps verify webhook logic without actual PayOS payment.
+    
+    Example:
+    POST /payments/webhook/test/
+    {
+        "order_id": 16,
+        "status": "PAID",
+        "code": "00",
+        "success": true
+    }
+    """
+    logger.info(f"Test webhook called for order: {payload.order_id}")
+    
+    # Create a mock PayOS webhook payload
+    mock_payload = {
+        "data": {
+            "orderCode": payload.order_id,
+            "status": payload.status,
+            "code": payload.code,
+            "success": payload.success
+        }
+    }
+    
+    # Get order
+    order = db.get(Order, payload.order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    old_status = order.payment_status.value
+    logger.info(f"Order {order.id} - Current status: {old_status}")
+    
+    # Process status update (same logic as real webhook)
+    status_text = payload.status.lower()
+    code_text = payload.code
+    
+    if payload.success is True or code_text in ("00", "0") or status_text in ("success", "paid", "completed"):
+        order.payment_status = PaymentStatus.COMPLETED
+        logger.info(f"Order {order.id} payment status updated: {old_status} -> completed")
+    elif payload.success is False or status_text in ("failed", "cancelled", "canceled"):
+        order.payment_status = PaymentStatus.FAILED
+        logger.info(f"Order {order.id} payment status updated: {old_status} -> failed")
+    else:
+        logger.warning(f"Order {order.id} - Unknown status, keeping current status")
+    
+    db.commit()
+    db.refresh(order)
+    
+    return {
+        "ok": True,
+        "message": f"Test webhook processed successfully",
+        "order_id": order.id,
+        "old_status": old_status,
+        "new_status": order.payment_status.value,
+        "mock_payload": mock_payload
+    }
+
+
+@router.get("/webhook/logs/{order_id}")
+async def get_webhook_info(
+    order_id: int,
+    db: Session = Depends(get_db),
+):
+    """
+    Get current payment status of an order.
+    Useful to check if webhook has updated the order status.
+    """
+    order = db.get(Order, order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    return {
+        "order_id": order.id,
+        "payment_status": order.payment_status.value,
+        "total_amount": float(order.total_amount),
+        "order_date": order.order_date.isoformat() if order.order_date else None,
+        "message": "Check this endpoint after payment to verify webhook updated the status"
+    }
+
+
+@router.post("/webhook/manual-update/{order_id}")
+async def manual_update_payment_status(
+    order_id: int,
+    status: str = "completed",  # "completed" or "failed"
+    db: Session = Depends(get_db),
+):
+    """
+    Manually update payment status for an order.
+    Use this as a fallback when PayOS webhook doesn't work.
+    
+    Example:
+    POST /payments/webhook/manual-update/17?status=completed
+    POST /payments/webhook/manual-update/17?status=failed
+    """
+    logger.info(f"Manual payment status update requested for order {order_id} with status: {status}")
+    
+    order = db.get(Order, order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    old_status = order.payment_status.value
+    logger.info(f"Order {order_id} - Current status: {old_status}")
+    
+    status_lower = status.lower()
+    if status_lower in ("completed", "success", "paid"):
+        order.payment_status = PaymentStatus.COMPLETED
+        new_status = "completed"
+    elif status_lower in ("failed", "cancelled", "canceled"):
+        order.payment_status = PaymentStatus.FAILED
+        new_status = "failed"
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid status: {status}. Use 'completed' or 'failed'"
+        )
+    
+    db.commit()
+    db.refresh(order)
+    
+    logger.info(f"Order {order_id} payment status manually updated: {old_status} -> {new_status}")
+    logger.info(f"Order {order_id} final status: {order.payment_status.value}")
+    
+    return {
+        "ok": True,
+        "message": f"Order {order_id} payment status updated manually",
+        "order_id": order.id,
+        "old_status": old_status,
+        "new_status": order.payment_status.value
+    }
 
