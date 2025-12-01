@@ -44,19 +44,51 @@ def list_orders(
     ).all()
 
 
+@router.get("/admin", response_model=list[schema.OrderResponse])
+def list_all_orders_admin(
+    current_user = Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    """
+    Get all orders in the system (Admin only).
+    """
+    return db.query(models.order.Order).all()
+
+
+@router.get("/admin/{order_id}", response_model=schema.OrderResponse)
+def get_order_admin(
+    order_id: int,
+    current_user = Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    """
+    Get a specific order by ID for admin (shortcut route).
+    """
+    item = db.get(models.order.Order, order_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return item
+
+
 @router.get("/{order_id}", response_model=schema.OrderResponse)
 def get_order(
     order_id: int,
     current_user = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Get a specific order by ID (only if it belongs to current user)"""
+    """
+    Get a specific order by ID.
+    - Normal user: only if the order belongs to them.
+    - Admin: can access any order.
+    """
     item = db.get(models.order.Order, order_id)
     if not item:
         raise HTTPException(status_code=404, detail="Order not found")
     
-    # Check if order belongs to current user
-    if item.user_id != current_user.id:
+    # Check ownership for normal users; admins can access all orders
+    if item.user_id != current_user.id and (
+        not current_user.role or current_user.role.role_name != "admin"
+    ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to access this order"
@@ -68,11 +100,14 @@ def get_order(
 @router.put("/{order_id}", response_model=schema.OrderResponse)
 def update_order(
     order_id: int,
-    payload: schema.OrderUpdate,
+    payload: schema.UserOrderUpdate,
     current_user = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Update an order (only if it belongs to current user)"""
+    """
+    Update an order (only if it belongs to current user).
+    Normal users can only edit contact/shipping info, not payment/shipment status.
+    """
     item = db.get(models.order.Order, order_id)
     if not item:
         raise HTTPException(status_code=404, detail="Order not found")
@@ -86,6 +121,29 @@ def update_order(
     
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(item, field, value)
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+@router.patch("/admin/{order_id}", response_model=schema.OrderResponse)
+def admin_update_order(
+    order_id: int,
+    payload: schema.OrderUpdate,
+    current_user = Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    """
+    Admin-only endpoint to update an order.
+    Admin can change payment_status, shipment_status, and other order fields.
+    """
+    item = db.get(models.order.Order, order_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        setattr(item, field, value)
+
     db.commit()
     db.refresh(item)
     return item
