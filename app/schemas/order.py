@@ -17,6 +17,10 @@ class OrderCreate(BaseModel):
 
 
 class OrderUpdate(BaseModel):
+    """
+    Full update payload, intended for admin use.
+    Admin can adjust financial and shipment-related fields.
+    """
     total_amount: Decimal | None = None
     payment_method: str | None = None
     payment_status: PaymentStatus | None = None
@@ -24,6 +28,18 @@ class OrderUpdate(BaseModel):
     address: str | None = None
     phone: str | None = None
     shipment_status: ShipmentStatus | None = None
+    delivery_date: datetime | None = None
+    shipping_method: str | None = None
+
+
+class UserOrderUpdate(BaseModel):
+    """
+    Limited update payload for normal users.
+    Users can only change contact / shipping info, not payment/shipment status.
+    """
+    recipient_name: str | None = None
+    address: str | None = None
+    phone: str | None = None
     delivery_date: datetime | None = None
     shipping_method: str | None = None
 
