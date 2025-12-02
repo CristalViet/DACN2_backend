@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordBearer
 from jose import JWTError, jwt
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.config import SECRET_KEY
 from app.core.security import ALGORITHM
@@ -34,7 +34,11 @@ def get_current_user(
     except JWTError:
         raise credentials_exception
         
-    user = db.get(models.user.User, int(user_id))
+    # Eager load role relationship using selectinload (better for async contexts)
+    user = db.query(models.user.User).options(
+        selectinload(models.user.User.role)
+    ).filter(models.user.User.id == int(user_id)).first()
+    
     if user is None:
         raise credentials_exception
         

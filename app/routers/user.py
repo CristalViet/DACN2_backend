@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query
+from sqlalchemy.orm import Session, selectinload
+from sqlalchemy import or_
 from app import models
 from app.schemas import user as schema
 from app.database import get_db
@@ -7,6 +8,7 @@ from app.core.security import get_password_hash
 from app.core.deps import require_admin, get_current_user
 import uuid
 from pathlib import Path
+from typing import Optional
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -33,9 +35,47 @@ def create_user(
 
 
 @router.get("/", response_model=list[schema.UserResponse])
-def list_users(db: Session = Depends(get_db)):
-    """Get all users (Public access)"""
-    return db.query(models.user.User).all()
+def list_users(
+    current_user = Depends(require_admin),
+    db: Session = Depends(get_db),
+    search: Optional[str] = Query(None),
+    role: Optional[str] = Query(None, description="Filter by role name: reader, writer, admin"),
+    is_active: Optional[bool] = Query(None),
+):
+    """
+    Get all users with filters (Admin only).
+    Supports search by username/email/phone and filter by role name and active status.
+    """
+    query = db.query(models.user.User).options(
+        selectinload(models.user.User.role)
+    )
+    
+    # Apply search filter
+    if search:
+        search_filter = or_(
+            models.user.User.username.ilike(f"%{search}%"),
+            models.user.User.email.ilike(f"%{search}%"),
+            models.user.User.phone.ilike(f"%{search}%") if models.user.User.phone else False
+        )
+        query = query.filter(search_filter)
+    
+    # Apply role filter (by role name)
+    if role:
+        role_obj = db.query(models.user_role.UserRole).filter(
+            models.user_role.UserRole.role_name == role.lower()
+        ).first()
+        if role_obj:
+            query = query.filter(models.user.User.role_id == role_obj.id)
+        else:
+            # If role doesn't exist, return empty list
+            query = query.filter(False)
+    
+    # Apply active status filter
+    if is_active is not None:
+        query = query.filter(models.user.User.is_active == is_active)
+    
+    users = query.order_by(models.user.User.date_joined.desc()).all()
+    return users
 
 
 @router.get("/{user_id}", response_model=schema.UserResponse)
@@ -48,18 +88,71 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{user_id}", response_model=schema.UserResponse)
-def update_user(
+def update_user_put(
     user_id: int,
     payload: schema.UserUpdate,
     current_user = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    """Update a user (Admin only)"""
+    """Update a user (Admin only) - PUT method"""
     user = db.get(models.user.User, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(user, field, value)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+@router.patch("/{user_id}", response_model=schema.UserResponse)
+def update_user(
+    user_id: int,
+    payload: schema.UserUpdatePatch,
+    current_user = Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    """
+    Update a user (Admin only) - PATCH method.
+    Supports role update by role name (string) instead of role_id.
+    """
+    user = db.get(models.user.User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    update_data = payload.model_dump(exclude_unset=True)
+    
+    # Handle role conversion: if role (string) is provided, convert to role_id
+    if "role" in update_data and update_data["role"]:
+        role_name = update_data.pop("role")
+        role_obj = db.query(models.user_role.UserRole).filter(
+            models.user_role.UserRole.role_name == role_name.lower()
+        ).first()
+        if not role_obj:
+            raise HTTPException(status_code=400, detail=f"Role '{role_name}' not found")
+        update_data["role_id"] = role_obj.id
+    
+    # Check for duplicate email
+    if "email" in update_data and update_data["email"] != user.email:
+        existing = db.query(models.user.User).filter(
+            models.user.User.email == update_data["email"],
+            models.user.User.id != user_id
+        ).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already taken")
+    
+    # Check for duplicate username
+    if "username" in update_data and update_data["username"] != user.username:
+        existing = db.query(models.user.User).filter(
+            models.user.User.username == update_data["username"],
+            models.user.User.id != user_id
+        ).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Username already taken")
+    
+    for field, value in update_data.items():
+        setattr(user, field, value)
+    
     db.commit()
     db.refresh(user)
     return user

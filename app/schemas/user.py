@@ -26,6 +26,19 @@ class UserUpdate(BaseModel):
     is_active: bool | None = None
 
 
+class UserUpdatePatch(BaseModel):
+    """
+    PATCH update schema that accepts role as string (role name) instead of role_id.
+    Used for frontend compatibility.
+    """
+    username: str | None = None
+    email: EmailStr | None = None
+    phone: str | None = None
+    bio: str | None = None
+    role: str | None = None  # Accept role name as string: "reader", "writer", "admin"
+    is_active: bool | None = None
+
+
 class UserResponse(UserBase):
     id: int
     phone: str | None = None
