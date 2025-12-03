@@ -67,7 +67,7 @@ def list_summaries(
 
 @router.get("/recommend/me", response_model=list[schema.SummaryResponse])
 def recommend_for_me(
-    limit: int = 10,
+    limit: int = 30,
     current_user = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):

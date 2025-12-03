@@ -278,259 +278,245 @@ def seed_data():
         books_data = [
             # Novel cluster
             {
-                "title": "Yellow Flowers on the Green Grass",
-                "category_ids": [categories[0].id],
-                "author_ids": [authors[0].id],
-                "publisher_id": publishers[0].id,
-                "publish_date": "2010-01-01",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/81UwbC9L0rL.jpg",
-                "price": 120000,
-                "stock_quantity": 50
-            },
-            {
-                "title": "The Book Thief",
-                "category_ids": [categories[0].id],
-                "author_ids": [authors[0].id],
-                "publisher_id": publishers[1].id,
-                "publish_date": "2005-01-01",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/91TfI5tZ2jL.jpg",
-                "price": 180000,
-                "stock_quantity": 25
-            },
-            {
-                "title": "The Shining",
-                "category_ids": [categories[6].id],
-                "author_ids": [authors[3].id],
-                "publisher_id": publishers[4].id,
-                "publish_date": "1977-01-28",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/81pB+tFq8LL.jpg",
-                "price": 200000,
-                "stock_quantity": 40
-            },
-            {
-                "title": "Harry Potter and the Philosopher's Stone",
-                "category_ids": [categories[6].id],
-                "author_ids": [authors[4].id],
-                "publisher_id": publishers[5].id,
-                "publish_date": "1997-06-26",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/81YOuOGFCJL.jpg",
-                "price": 220000,
-                "stock_quantity": 100
-            },
-
-            # SCIENCE
-            {
-                "title": "Sapiens: A Brief History of Humankind",
-                "category_ids": [categories[1].id],
-                "author_ids": [authors[1].id],
-                "publisher_id": publishers[3].id,
-                "publish_date": "2011-01-01",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/713jIoMO3UL.jpg",
-                "price": 250000,
-                "stock_quantity": 30
-            },
-            {
-                "title": "Homo Deus: A Brief History of Tomorrow",
-                "category_ids": [categories[1].id],
-                "author_ids": [authors[1].id],
-                "publisher_id": publishers[3].id,
-                "publish_date": "2015-01-01",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/71g2ednj0JL.jpg",
-                "price": 260000,
-                "stock_quantity": 35
-            },
-            {
-                "title": "21 Lessons for the 21st Century",
-                "category_ids": [categories[1].id],
-                "author_ids": [authors[1].id],
-                "publisher_id": publishers[3].id,
-                "publish_date": "2018-08-30",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/71rI9neT7YL.jpg",
-                "price": 270000,
-                "stock_quantity": 28
-            },
-
-            # PSYCHOLOGY
-            {
-                "title": "Thinking, Fast and Slow",
-                "category_ids": [categories[7].id],
-                "author_ids": [authors[5].id],
-                "publisher_id": publishers[4].id,
-                "publish_date": "2011-10-25",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/71pGdZpEJkL.jpg",
-                "price": 280000,
-                "stock_quantity": 45
-            },
-            {
-                "title": "Outliers: The Story of Success",
-                "category_ids": [categories[7].id],
-                "author_ids": [authors[6].id],
-                "publisher_id": publishers[4].id,
-                "publish_date": "2008-11-18",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/71T4GuxLCuL.jpg",
-                "price": 240000,
-                "stock_quantity": 50
-            },
-            {
-                "title": "Blink: The Power of Thinking Without Thinking",
-                "category_ids": [categories[7].id],
-                "author_ids": [authors[6].id],
-                "publisher_id": publishers[4].id,
-                "publish_date": "2005-01-11",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/81IuEJYTNJL.jpg",
-                "price": 230000,
-                "stock_quantity": 42
-            },
-            {
-                "title": "The Tipping Point",
-                "category_ids": [categories[7].id],
-                "author_ids": [authors[6].id],
-                "publisher_id": publishers[4].id,
-                "publish_date": "2000-03-01",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/71UypkUjStL.jpg",
-                "price": 220000,
-                "stock_quantity": 38
-            },
-
-            # BUSINESS
-            {
-                "title": "Rich Dad Poor Dad",
-                "category_ids": [categories[3].id],
-                "author_ids": [authors[7].id],
-                "publisher_id": publishers[6].id,
-                "publish_date": "1997-04-01",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/81bsw6fnUiL.jpg",
-                "price": 190000,
-                "stock_quantity": 80
-            },
-            {
-                "title": "Cashflow Quadrant",
-                "category_ids": [categories[3].id],
-                "author_ids": [authors[7].id],
-                "publisher_id": publishers[6].id,
-                "publish_date": "1998-01-01",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/81D4AHN4PIL.jpg",
-                "price": 200000,
-                "stock_quantity": 60
-            },
-            {
-                "title": "The Lean Startup",
-                "category_ids": [categories[3].id],
-                "author_ids": [authors[12].id],
-                "publisher_id": publishers[4].id,
-                "publish_date": "2011-09-13",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/81-QB7nDh4L.jpg",
-                "price": 250000,
-                "stock_quantity": 55
-            },
-
-            # SELF DEVELOPMENT
-            {
-                "title": "How to Win Friends & Influence People",
-                "category_ids": [categories[4].id],
-                "author_ids": [authors[2].id],
-                "publisher_id": publishers[3].id,
-                "publish_date": "1936-01-01",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/81bT8mZ0HPL.jpg",
-                "price": 150000,
-                "stock_quantity": 100
-            },
-            {
-                "title": "Atomic Habits",
-                "category_ids": [categories[4].id],
-                "author_ids": [authors[11].id],
-                "publisher_id": publishers[4].id,
-                "publish_date": "2018-10-16",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/91bYsX41DVL.jpg",
-                "price": 210000,
-                "stock_quantity": 90
-            },
-            {
-                "title": "The 7 Habits of Highly Effective People",
-                "category_ids": [categories[4].id],
-                "author_ids": [authors[19].id],
-                "publisher_id": publishers[3].id,
-                "publish_date": "1989-08-15",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/81FdKydlH-L.jpg",
-                "price": 180000,
-                "stock_quantity": 75
-            },
-
-            # TECHNOLOGY
-            {
-                "title": "The Innovator's Dilemma",
-                "category_ids": [categories[5].id],
-                "author_ids": [authors[15].id],
-                "publisher_id": publishers[4].id,
-                "publish_date": "1997-01-01",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/71ZlQ2cNCyL.jpg",
-                "price": 290000,
-                "stock_quantity": 40
-            },
-            {
-                "title": "Clean Code",
-                "category_ids": [categories[11].id],
-                "author_ids": [authors[13].id],
-                "publisher_id": publishers[7].id,
-                "publish_date": "2008-08-11",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/41-sN-mzwKL.jpg",
-                "price": 320000,
-                "stock_quantity": 65
-            },
-            {
-                "title": "The Pragmatic Programmer",
-                "category_ids": [categories[11].id],
-                "author_ids": [authors[14].id],
-                "publisher_id": publishers[7].id,
-                "publish_date": "1999-10-20",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/81sQ5cY9YwL.jpg",
-                "price": 300000,
-                "stock_quantity": 55
-            },
-
-            # HISTORY
-            {
-                "title": "Guns, Germs, and Steel",
-                "category_ids": [categories[2].id],
-                "author_ids": [authors[16].id],
-                "publisher_id": publishers[3].id,
-                "publish_date": "1997-03-01",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/91T9H-2Vx-L.jpg",
-                "price": 270000,
-                "stock_quantity": 35
-            },
-            {
-                "title": "The Rise and Fall of the Third Reich",
-                "category_ids": [categories[2].id],
-                "author_ids": [authors[17].id],
-                "publisher_id": publishers[3].id,
-                "publish_date": "1960-10-17",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/91M9fmOvbYL.jpg",
-                "price": 310000,
-                "stock_quantity": 30
-            },
-
-            # BIOGRAPHY
-            {
-                "title": "Steve Jobs",
-                "category_ids": [categories[9].id],
-                "author_ids": [authors[10].id],
-                "publisher_id": publishers[4].id,
-                "publish_date": "2011-10-24",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/71ZOtNdaZCL.jpg",
-                "price": 300000,
-                "stock_quantity": 50
-            },
-            {
-                "title": "Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future",
-                "category_ids": [categories[9].id],
-                "author_ids": [authors[18].id],
-                "publisher_id": publishers[4].id,
-                "publish_date": "2015-05-19",
-                "cover_image": "https://images-na.ssl-images-amazon.com/images/I/81LKkRldX-L.jpg",
-                "price": 280000,
-                "stock_quantity": 45
-            }
+  "title": "Yellow Flowers on the Green Grass",
+  "category_ids": [categories[0].id],
+  "author_ids": [authors[0].id],
+  "publisher_id": publishers[0].id,
+  "publish_date": "2010-01-01",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9786046981100-M.jpg",
+  "price": 120000,
+  "stock_quantity": 50
+},
+{
+  "title": "The Book Thief",
+  "category_ids": [categories[0].id],
+  "author_ids": [authors[0].id],
+  "publisher_id": publishers[1].id,
+  "publish_date": "2005-01-01",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780375842207-M.jpg",
+  "price": 180000,
+  "stock_quantity": 25
+},
+{
+  "title": "The Shining",
+  "category_ids": [categories[6].id],
+  "author_ids": [authors[3].id],
+  "publisher_id": publishers[4].id,
+  "publish_date": "1977-01-28",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780385121675-M.jpg",
+  "price": 200000,
+  "stock_quantity": 40
+},
+{
+  "title": "Harry Potter and the Philosopher's Stone",
+  "category_ids": [categories[6].id],
+  "author_ids": [authors[4].id],
+  "publisher_id": publishers[5].id,
+  "publish_date": "1997-06-26",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780747532743-M.jpg",
+  "price": 220000,
+  "stock_quantity": 100
+},
+{
+  "title": "Sapiens: A Brief History of Humankind",
+  "category_ids": [categories[1].id],
+  "author_ids": [authors[1].id],
+  "publisher_id": publishers[3].id,
+  "publish_date": "2011-01-01",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780062316097-M.jpg",
+  "price": 250000,
+  "stock_quantity": 30
+},
+{
+  "title": "Homo Deus: A Brief History of Tomorrow",
+  "category_ids": [categories[1].id],
+  "author_ids": [authors[1].id],
+  "publisher_id": publishers[3].id,
+  "publish_date": "2015-01-01",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780062464316-M.jpg",
+  "price": 260000,
+  "stock_quantity": 35
+},
+{
+  "title": "21 Lessons for the 21st Century",
+  "category_ids": [categories[1].id],
+  "author_ids": [authors[1].id],
+  "publisher_id": publishers[3].id,
+  "publish_date": "2018-08-30",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780525512172-M.jpg",
+  "price": 270000,
+  "stock_quantity": 28
+},
+{
+  "title": "Thinking, Fast and Slow",
+  "category_ids": [categories[7].id],
+  "author_ids": [authors[5].id],
+  "publisher_id": publishers[4].id,
+  "publish_date": "2011-10-25",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780374275631-M.jpg",
+  "price": 280000,
+  "stock_quantity": 45
+},
+{
+  "title": "Outliers: The Story of Success",
+  "category_ids": [categories[7].id],
+  "author_ids": [authors[6].id],
+  "publisher_id": publishers[4].id,
+  "publish_date": "2008-11-18",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780316017930-M.jpg",
+  "price": 240000,
+  "stock_quantity": 50
+},
+{
+  "title": "Blink: The Power of Thinking Without Thinking",
+  "category_ids": [categories[7].id],
+  "author_ids": [authors[6].id],
+  "publisher_id": publishers[4].id,
+  "publish_date": "2005-01-11",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780316010665-M.jpg",
+  "price": 230000,
+  "stock_quantity": 42
+},
+{
+  "title": "The Tipping Point",
+  "category_ids": [categories[7].id],
+  "author_ids": [authors[6].id],
+  "publisher_id": publishers[4].id,
+  "publish_date": "2000-03-01",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780316346627-M.jpg",
+  "price": 220000,
+  "stock_quantity": 38
+},
+{
+  "title": "Rich Dad Poor Dad",
+  "category_ids": [categories[3].id],
+  "author_ids": [authors[7].id],
+  "publisher_id": publishers[6].id,
+  "publish_date": "1997-04-01",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9781612680019-M.jpg",
+  "price": 190000,
+  "stock_quantity": 80
+},
+{
+  "title": "Cashflow Quadrant",
+  "category_ids": [categories[3].id],
+  "author_ids": [authors[7].id],
+  "publisher_id": publishers[6].id,
+  "publish_date": "1998-01-01",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9781612680057-M.jpg",
+  "price": 200000,
+  "stock_quantity": 60
+},
+{
+  "title": "The Lean Startup",
+  "category_ids": [categories[3].id],
+  "author_ids": [authors[12].id],
+  "publisher_id": publishers[4].id,
+  "publish_date": "2011-09-13",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780307887894-M.jpg",
+  "price": 250000,
+  "stock_quantity": 55
+},
+{
+  "title": "How to Win Friends & Influence People",
+  "category_ids": [categories[4].id],
+  "author_ids": [authors[2].id],
+  "publisher_id": publishers[3].id,
+  "publish_date": "1936-01-01",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780671027032-M.jpg",
+  "price": 150000,
+  "stock_quantity": 100
+},
+{
+  "title": "Atomic Habits",
+  "category_ids": [categories[4].id],
+  "author_ids": [authors[11].id],
+  "publisher_id": publishers[4].id,
+  "publish_date": "2018-10-16",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780735211292-M.jpg",
+  "price": 210000,
+  "stock_quantity": 90
+},
+{
+  "title": "The 7 Habits of Highly Effective People",
+  "category_ids": [categories[4].id],
+  "author_ids": [authors[19].id],
+  "publisher_id": publishers[3].id,
+  "publish_date": "1989-08-15",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780743269513-M.jpg",
+  "price": 180000,
+  "stock_quantity": 75
+},
+{
+  "title": "The Innovator's Dilemma",
+  "category_ids": [categories[5].id],
+  "author_ids": [authors[15].id],
+  "publisher_id": publishers[4].id,
+  "publish_date": "1997-01-01",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780062060242-M.jpg",
+  "price": 290000,
+  "stock_quantity": 40
+},
+{
+  "title": "Clean Code",
+  "category_ids": [categories[11].id],
+  "author_ids": [authors[13].id],
+  "publisher_id": publishers[7].id,
+  "publish_date": "2008-08-11",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780132350884-M.jpg",
+  "price": 320000,
+  "stock_quantity": 65
+},
+{
+  "title": "The Pragmatic Programmer",
+  "category_ids": [categories[11].id],
+  "author_ids": [authors[14].id],
+  "publisher_id": publishers[7].id,
+  "publish_date": "1999-10-20",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780201616224-M.jpg",
+  "price": 300000,
+  "stock_quantity": 55
+},
+{
+  "title": "Guns, Germs, and Steel",
+  "category_ids": [categories[2].id],
+  "author_ids": [authors[16].id],
+  "publisher_id": publishers[3].id,
+  "publish_date": "1997-03-01",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780393317558-M.jpg",
+  "price": 270000,
+  "stock_quantity": 35
+},
+{
+  "title": "The Rise and Fall of the Third Reich",
+  "category_ids": [categories[2].id],
+  "author_ids": [authors[17].id],
+  "publisher_id": publishers[3].id,
+  "publish_date": "1960-10-17",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780671728687-M.jpg",
+  "price": 310000,
+  "stock_quantity": 30
+},
+{
+  "title": "Steve Jobs",
+  "category_ids": [categories[9].id],
+  "author_ids": [authors[10].id],
+  "publisher_id": publishers[4].id,
+  "publish_date": "2011-10-24",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9781451648539-M.jpg",
+  "price": 300000,
+  "stock_quantity": 50
+},
+{
+  "title": "Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future",
+  "category_ids": [categories[9].id],
+  "author_ids": [authors[18].id],
+  "publisher_id": publishers[4].id,
+  "publish_date": "2015-05-19",
+  "cover_image": "https://covers.openlibrary.org/b/isbn/9780062301239-M.jpg",
+  "price": 280000,
+  "stock_quantity": 45
+}
         ]
 
         books = []
