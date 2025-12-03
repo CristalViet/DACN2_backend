@@ -1,8 +1,9 @@
 from typing import Optional
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, field_serializer
 from datetime import datetime
 
 from app.schemas.user_role import UserRoleResponse
+from app.helpers.url import get_full_image_url
 
 
 class UserBase(BaseModel):
@@ -48,6 +49,11 @@ class UserResponse(UserBase):
     date_joined: datetime
     is_active: bool | None = True
 
+    @field_serializer('profile_image')
+    def serialize_profile_image(self, value: str | None) -> str | None:
+        """Convert relative image URL to full URL"""
+        return get_full_image_url(value)
+
     model_config = ConfigDict(from_attributes=True)
 
 class UserWithRoleResponse(UserBase):
@@ -59,5 +65,10 @@ class UserWithRoleResponse(UserBase):
     role: Optional[UserRoleResponse] = None  
     date_joined: datetime
     is_active: bool | None = True
+
+    @field_serializer('profile_image')
+    def serialize_profile_image(self, value: str | None) -> str | None:
+        """Convert relative image URL to full URL"""
+        return get_full_image_url(value)
 
     model_config = ConfigDict(from_attributes=True)

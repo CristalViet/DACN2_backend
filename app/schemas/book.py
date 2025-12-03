@@ -1,10 +1,11 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_serializer
 from datetime import date
 from decimal import Decimal
 from typing import List
 from app.schemas.category import CategoryResponse
 from app.schemas.author import AuthorResponse
 from app.schemas.publisher import PublisherResponse
+from app.helpers.url import get_full_image_url
 
 
 class BookCreate(BaseModel):
@@ -40,6 +41,11 @@ class BookResponse(BaseModel):
     categories: List[CategoryResponse] = []
     authors: List[AuthorResponse] = []
     publisher: PublisherResponse | None = None
+
+    @field_serializer('cover_image')
+    def serialize_cover_image(self, value: str | None) -> str | None:
+        """Convert relative image URL to full URL"""
+        return get_full_image_url(value)
 
     model_config = ConfigDict(from_attributes=True)
 

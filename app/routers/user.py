@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query, Request
 from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import or_
 from app import models
@@ -175,6 +175,7 @@ def delete_user(
 
 @router.patch("/me", response_model=schema.UserResponse)
 async def update_current_user(
+    request: Request,
     username: str | None = Form(None),
     email: str | None = Form(None),
     phone: str | None = Form(None),
@@ -190,6 +191,9 @@ async def update_current_user(
     
     # Handle image upload
     if profile_image:
+        from app.config import BACKEND_BASE_URL
+        from app.helpers.url import get_full_image_url
+        
         # Validate file type
         allowed_extensions = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
         file_ext = Path(profile_image.filename).suffix.lower()
@@ -210,12 +214,21 @@ async def update_current_user(
                 content = await profile_image.read()
                 buffer.write(content)
             
-            # Store relative path in database
-            image_url = f"/static/uploads/profile_images/{filename}"
+            # Store full URL in database (auto-detect from request if available)
+            relative_path = f"/static/uploads/profile_images/{filename}"
+            image_url = get_full_image_url(relative_path, request)
             
             # Delete old image if exists
             if current_user.profile_image:
-                old_image_path = Path("static") / current_user.profile_image.lstrip("/")
+                # Extract relative path from full URL if needed
+                if current_user.profile_image.startswith(("http://", "https://")):
+                    from urllib.parse import urlparse
+                    parsed = urlparse(current_user.profile_image)
+                    old_relative_path = parsed.path
+                else:
+                    old_relative_path = current_user.profile_image
+                
+                old_image_path = Path("static") / old_relative_path.lstrip("/")
                 if old_image_path.exists():
                     old_image_path.unlink()
             

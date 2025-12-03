@@ -219,12 +219,13 @@ def login(payload: schema.LoginRequest, db: Session = Depends(get_db)):
 
 @router.get("/me")
 def me(current_user = Depends(get_current_user)):
+    from app.helpers.url import get_full_image_url
     return {
         "id": current_user.id,
         "username": current_user.username,
         "email": current_user.email,
         "phone": current_user.phone,
-        "profile_image": current_user.profile_image,
+        "profile_image": get_full_image_url(current_user.profile_image),
         "bio": current_user.bio,
         "is_active": current_user.is_active,
         "role": current_user.role.role_name

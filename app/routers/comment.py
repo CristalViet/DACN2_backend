@@ -58,7 +58,7 @@ def get_comments_by_summary(
         selectinload(Comment.parent_comment).selectinload(Comment.user).selectinload(User.role)
     ).join(
         comment_user, Comment.user_id == comment_user.id
-    ).join(
+    ).outerjoin(
         comment_role, comment_user.role_id == comment_role.id
     ).outerjoin(
         parent_comment, Comment.parent_comment_id == parent_comment.id
@@ -70,7 +70,10 @@ def get_comments_by_summary(
         Comment.summary_id == summary_id
     ).filter(
         and_(
-            comment_role.role_name != "admin",
+            or_(
+                comment_role.role_name.is_(None),
+                comment_role.role_name != "admin"
+            ),
             or_(
                 parent_role.role_name.is_(None),
                 parent_role.role_name != "admin"
@@ -99,7 +102,7 @@ def get_admin_comments_by_summary(
         selectinload(Comment.parent_comment).selectinload(Comment.user).selectinload(User.role)
     ).join(
         comment_user, Comment.user_id == comment_user.id
-    ).join(
+    ).outerjoin(
         comment_role, comment_user.role_id == comment_role.id
     ).outerjoin(
         parent_comment, Comment.parent_comment_id == parent_comment.id

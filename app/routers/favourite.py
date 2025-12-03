@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session, selectinload
 from app.database import get_db
 from app import models
@@ -120,6 +120,21 @@ def delete_favourite(
     db.delete(item)
     db.commit()
     return {"deleted": True}
+
+
+@router.get("/check", response_model=dict)
+def check_favourite(
+    summary_id: int = Query(..., description="Summary ID to check"),
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Check if a summary is in the current user's favourites"""
+    item = db.query(Favourite).filter(
+        Favourite.user_id == current_user.id,
+        Favourite.summary_id == summary_id
+    ).first()
+    
+    return {"is_favourite": item is not None}
 
 
 @router.delete("/summary/{summary_id}")

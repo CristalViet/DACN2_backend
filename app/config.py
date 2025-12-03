@@ -14,6 +14,7 @@ PAYOS_API_KEY = os.getenv("PAYOS_API_KEY", "")
 PAYOS_CHECKSUM_KEY = os.getenv("PAYOS_CHECKSUM_KEY", "")
 PAYOS_BASE_URL = os.getenv("PAYOS_BASE_URL", "https://api.payos.vn")
 FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://localhost:5173")
+BACKEND_BASE_URL = os.getenv("BACKEND_BASE_URL", "http://localhost:8000")
 
 # Email configuration for OTP
 SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
