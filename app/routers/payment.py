@@ -8,6 +8,7 @@ from app.schemas.payment import (
     TestWebhookPayload,
 )
 from app.models.order import Order, PaymentStatus
+from app.core.deps import get_current_user
 from app.config import (
     PAYOS_CLIENT_ID,
     PAYOS_API_KEY,
@@ -50,10 +51,13 @@ if PAYOS_CLIENT_ID and PAYOS_API_KEY and PAYOS_CHECKSUM_KEY:
 @router.post("/session/", response_model=CreatePaymentSessionResponse)
 async def create_payment_session(
     payload: CreatePaymentSessionRequest,
+    current_user = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """
-    Create a PayOS checkout session for an existing order (pending).
+    Create a PayOS checkout session for an existing order.
+    Allows retry payment for orders with status PENDING or FAILED.
+    User can only create payment session for their own orders.
     """
     _ensure_payos_config()
     if payos_client is None:
@@ -62,8 +66,22 @@ async def create_payment_session(
     order = db.get(Order, payload.order_id)
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-    if order.payment_status != PaymentStatus.PENDING:
-        raise HTTPException(status_code=400, detail="Order is not pending")
+    
+    # Check if order belongs to current user
+    if order.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to pay for this order"
+        )
+    
+    # Allow payment for PENDING or FAILED orders (retry payment)
+    if order.payment_status not in (PaymentStatus.PENDING, PaymentStatus.FAILED):
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot create payment session for order with status: {order.payment_status.value}. Only PENDING or FAILED orders can be paid."
+        )
+    
+    logger.info(f"Creating payment session for order {order.id} (status: {order.payment_status.value})")
 
     # Build request using official SDK
     # amount must be integer VND; orderCode must be an integer and unique
@@ -129,6 +147,12 @@ async def create_payment_session(
             },
         )
 
+    # Reset payment status to PENDING when creating new payment session (for retry)
+    if order.payment_status == PaymentStatus.FAILED:
+        order.payment_status = PaymentStatus.PENDING
+        db.commit()
+        logger.info(f"Order {order.id} status reset to PENDING for retry payment")
+    
     return CreatePaymentSessionResponse(checkoutUrl=checkout_url, orderId=order.id)
 
 

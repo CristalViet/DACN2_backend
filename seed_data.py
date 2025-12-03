@@ -990,7 +990,157 @@ def seed_data():
         approved_summaries = [s for s in summaries if s.status == "approved"]
         content_sections_data = []
         
-        for idx, summ_obj in enumerate(approved_summaries[:15]):  # Add sections for first 15 approved summaries
+        # Find summaries for selected books (5 books with detailed content)
+        selected_book_titles = [
+            "Sapiens: A Brief History of Humankind",
+            "Thinking, Fast and Slow",
+            "Rich Dad Poor Dad",
+            "Atomic Habits",
+            "Clean Code"
+        ]
+        
+        # Create a mapping of book titles to book objects
+        book_title_map = {b.title: b for b in books}
+        
+        # Find summaries for selected books
+        selected_summaries = []
+        for summ_obj in approved_summaries:
+            book_obj = db.query(book.Book).filter(book.Book.id == summ_obj.book_id).first()
+            if book_obj and book_obj.title in selected_book_titles:
+                # Only take the first summary for each selected book
+                if not any(s.book_id == summ_obj.book_id for s in selected_summaries):
+                    selected_summaries.append(summ_obj)
+        
+        # Create detailed content sections for selected 5 books
+        for summ_obj in selected_summaries:
+            book_obj = db.query(book.Book).filter(book.Book.id == summ_obj.book_id).first()
+            if not book_obj:
+                continue
+                
+            if book_obj.title == "Sapiens: A Brief History of Humankind":
+                content_sections_data.extend([
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 1,
+                        "title": "Introduction: The Cognitive Revolution",
+                        "content": "Sapiens: A Brief History of Humankind by Yuval Noah Harari is a groundbreaking exploration of how Homo sapiens came to dominate the world. The book begins with the Cognitive Revolution, which occurred around 70,000 years ago. This revolution enabled humans to develop language, share complex information, and cooperate in large groups. Unlike other animals, humans could discuss things that didn't exist, creating shared myths and beliefs that bound communities together. This ability to believe in fictional entities like gods, nations, and corporations allowed humans to organize in groups of thousands, far beyond the natural limit of about 150 individuals that other primates can manage. The Cognitive Revolution marked the beginning of human history, setting the stage for all subsequent developments in human civilization.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_1.mp3"
+                    },
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 2,
+                        "title": "The Agricultural Revolution and Its Consequences",
+                        "content": "The Agricultural Revolution, beginning around 12,000 years ago, transformed human society in ways that were both beneficial and detrimental. While agriculture allowed humans to settle in permanent communities and support larger populations, it also led to harder work, poorer nutrition, and increased vulnerability to disease. Harari provocatively argues that the Agricultural Revolution was 'history's biggest fraud' because it made the average person's life worse, not better. However, it was necessary for the development of complex societies. The surplus food produced by agriculture enabled the creation of cities, kingdoms, and empires. It also led to the development of writing, mathematics, and complex social hierarchies. The Agricultural Revolution fundamentally changed humanity's relationship with the environment and with each other, creating the foundation for modern civilization.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_2.mp3"
+                    },
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 3,
+                        "title": "The Unification of Humankind and Scientific Revolution",
+                        "content": "Harari explains how three universal orders - money, empires, and religion - gradually unified humankind into a single global society. Money created a universal medium of exchange that transcended cultural barriers. Empires spread common cultures and laws across vast territories. Religions provided shared ethical codes and worldviews. The Scientific Revolution, beginning around 500 years ago, marked another turning point. Unlike previous knowledge systems, science admitted ignorance and actively sought new discoveries. This led to unprecedented technological progress and European global dominance. However, Harari warns that this progress came at a cost: the destruction of traditional ways of life, environmental degradation, and the potential for catastrophic consequences. The book challenges readers to consider whether humanity's progress has truly made us happier and whether we can control the forces we've unleashed.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_3.mp3"
+                    }
+                ])
+            elif book_obj.title == "Thinking, Fast and Slow":
+                content_sections_data.extend([
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 1,
+                        "title": "Introduction: Two Systems of Thinking",
+                        "content": "Nobel Prize winner Daniel Kahneman introduces us to two distinct systems that drive our thinking. System 1 operates automatically and quickly, with little or no effort and no sense of voluntary control. It handles tasks like detecting hostility in a voice, reading words on billboards, and making simple calculations. System 2 allocates attention to effortful mental activities that demand it, including complex computations. It's associated with the subjective experience of agency, choice, and concentration. Most of what we think and do originates in System 1, but System 2 takes over when things get difficult. However, System 2 is lazy and often accepts what System 1 tells it. This division of labor between the two systems is highly efficient, but it leads to systematic errors in our thinking. Understanding these systems helps us recognize when we're making cognitive mistakes and how to think more clearly.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_1.mp3"
+                    },
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 2,
+                        "title": "Heuristics and Biases: How We Make Decisions",
+                        "content": "Kahneman reveals numerous cognitive biases that affect our judgment. The availability heuristic makes us overestimate the probability of events that are easily recalled from memory. The anchoring effect causes us to rely too heavily on the first piece of information we encounter. The representativeness heuristic leads us to judge probabilities by similarity rather than statistical likelihood. Confirmation bias makes us seek information that confirms our existing beliefs. Loss aversion means we feel losses more strongly than equivalent gains, leading to risk-averse behavior. The framing effect shows how the same information presented differently can lead to different decisions. These biases aren't random errors but systematic patterns in how our minds work. They served us well in our evolutionary past but can lead to poor decisions in the modern world. By understanding these biases, we can recognize them in ourselves and others, and make better decisions.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_2.mp3"
+                    },
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 3,
+                        "title": "Overconfidence and Prospect Theory",
+                        "content": "Kahneman demonstrates how overconfidence affects our judgments and decisions. We consistently overestimate our abilities, the accuracy of our predictions, and our control over events. This overconfidence is partly due to System 1's tendency to create coherent stories from limited information. We also suffer from the planning fallacy, consistently underestimating how long projects will take and how much they will cost. Prospect Theory, for which Kahneman won the Nobel Prize, explains how people actually make decisions under uncertainty, contradicting traditional economic theory. People evaluate outcomes relative to a reference point (usually the status quo) rather than in absolute terms. They're risk-averse when facing gains but risk-seeking when facing losses. This explains many seemingly irrational behaviors in economics and everyday life. The book concludes that while we can't eliminate these cognitive biases, awareness of them can help us make better decisions and design better systems.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_3.mp3"
+                    }
+                ])
+            elif book_obj.title == "Rich Dad Poor Dad":
+                content_sections_data.extend([
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 1,
+                        "title": "Introduction: Two Different Perspectives on Money",
+                        "content": "Robert Kiyosaki tells the story of growing up with two father figures who had completely different attitudes toward money and wealth. His 'poor dad' (his biological father) was highly educated, worked hard as a government employee, but struggled financially throughout his life. His 'rich dad' (his best friend's father) had less formal education but became one of the wealthiest men in Hawaii. The fundamental difference was their mindset: poor dad believed in working for money, while rich dad believed in making money work for him. Poor dad said 'I can't afford it' and focused on job security, while rich dad asked 'How can I afford it?' and focused on financial education. This contrast sets up the book's central theme: that financial literacy and the right mindset are more important than a high salary. The book challenges conventional wisdom about money, education, and success, arguing that the school system doesn't teach financial literacy, leaving most people trapped in the 'rat race' of working for money.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_1.mp3"
+                    },
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 2,
+                        "title": "Key Principles: Assets vs Liabilities and Making Money Work for You",
+                        "content": "Kiyosaki's most important lesson is understanding the difference between assets and liabilities. An asset puts money in your pocket, while a liability takes money out. Most people think their house is an asset, but Kiyosaki argues it's actually a liability because it takes money out of your pocket through mortgage payments, taxes, and maintenance. The rich focus on acquiring income-generating assets like rental properties, stocks, bonds, and businesses. The poor and middle class focus on acquiring liabilities that they think are assets, like houses, cars, and consumer goods. Rich dad taught Kiyosaki to 'mind your own business' - meaning build and maintain your asset column, not your employer's. While working a job, you should be building your own asset base. The goal is to have your assets generate enough income to cover your expenses, achieving financial freedom. This requires financial education, taking calculated risks, and thinking like an investor rather than an employee.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_2.mp3"
+                    },
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 3,
+                        "title": "Overcoming Obstacles and Taking Action",
+                        "content": "Kiyosaki identifies five main obstacles that prevent people from achieving financial independence: fear, cynicism, laziness, bad habits, and arrogance. Fear of losing money prevents most people from investing, but the rich understand that failure is part of the learning process. Cynicism creates doubt and inaction. Laziness manifests as being too busy to manage your finances. Bad habits, especially poor spending habits, keep people poor. Arrogance means thinking you know everything and not seeking advice. To overcome these obstacles, you need to develop financial intelligence through education, start small, and learn from mistakes. Kiyosaki emphasizes that the most important investment is in your financial education. You should read books, attend seminars, and learn from successful investors. The book concludes with actionable steps: stop doing what you're doing, look for new ideas, find someone who has done what you want to do, take classes and buy tapes, make lots of offers, and take action. The key is to start now, even with small steps, and continuously educate yourself about money and investing.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_3.mp3"
+                    }
+                ])
+            elif book_obj.title == "Atomic Habits":
+                content_sections_data.extend([
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 1,
+                        "title": "Introduction: The Surprising Power of Atomic Habits",
+                        "content": "James Clear introduces the concept of atomic habits - small changes that seem insignificant at first but compound into remarkable results over time. A 1% improvement may not seem like much, but if you get 1% better each day for a year, you'll end up 37 times better. Conversely, if you get 1% worse each day, you'll decline nearly down to zero. The problem is that we often expect linear progress when reality is more like compound interest. Small changes often appear to make no difference until you cross a critical threshold. Clear explains that habits are the compound interest of self-improvement. The same forces that make bad habits easy to form also make good habits easy to form. The key is understanding how habits work and how to design systems that make good habits inevitable and bad habits impossible. This book provides a practical framework for building better habits and breaking bad ones, based on the latest research in psychology, neuroscience, and behavioral science.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_1.mp3"
+                    },
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 2,
+                        "title": "The Four Laws of Behavior Change",
+                        "content": "Clear presents a simple framework for building good habits and breaking bad ones, based on four laws. The 1st Law (Make it Obvious): Make your habits obvious by using implementation intentions ('I will [BEHAVIOR] at [TIME] in [LOCATION]') and habit stacking ('After [CURRENT HABIT], I will [NEW HABIT]'). The 2nd Law (Make it Attractive): Make your habits attractive by using temptation bundling (pairing something you want to do with something you need to do) and joining groups where your desired behavior is the normal behavior. The 3rd Law (Make it Easy): Make your habits easy by reducing friction, using the two-minute rule (make habits so easy you can't say no), and automating your habits. The 4th Law (Make it Satisfying): Make your habits satisfying by using immediate rewards and tracking your progress. To break bad habits, invert these laws: make them invisible, unattractive, difficult, and unsatisfying. The key insight is that you don't rise to the level of your goals; you fall to the level of your systems. Focus on building better systems rather than setting better goals.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_2.mp3"
+                    },
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 3,
+                        "title": "Advanced Tactics: From Habits to Identity",
+                        "content": "Clear explains that the most effective way to change your habits is to focus not on what you want to achieve, but on who you wish to become. Every action is a vote for the type of person you wish to become. The goal is not to read a book, but to become a reader. The goal is not to run a marathon, but to become a runner. Identity change is the North Star of habit change. However, you can't become someone new overnight. You need to prove your new identity to yourself with small wins. Clear also discusses the importance of finding the right environment, as environment is the invisible hand that shapes human behavior. Small changes in context can lead to large changes in behavior over time. He emphasizes the importance of the Goldilocks Rule - maintaining motivation by working on tasks that are right on the edge of your current abilities. Finally, he addresses how to get back on track when you break a habit, emphasizing that missing once is an accident, but missing twice is the start of a new habit. The key is to never miss twice and to be patient - results take time, but they will come if you stick with the process.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_3.mp3"
+                    }
+                ])
+            elif book_obj.title == "Clean Code":
+                content_sections_data.extend([
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 1,
+                        "title": "Introduction: What is Clean Code?",
+                        "content": "Robert C. Martin, also known as Uncle Bob, introduces the concept of clean code and why it matters. Clean code is code that is easy to understand, easy to modify, and easy to test. It reads like well-written prose. Clean code is not written by following a set of rules; it's written by professionals who care about their craft. The book argues that the only way to go fast is to go well - writing clean code is not a luxury, it's a necessity. Bad code slows down development, increases bugs, and makes the codebase unmaintainable. Martin emphasizes that as professionals, we have a responsibility to write code that our colleagues can understand and maintain. The book is organized into three parts: principles, patterns, and practices of clean code. It covers topics from meaningful names and functions to error handling and concurrency. The goal is to help developers write code that not only works but is also maintainable, readable, and professional.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_1.mp3"
+                    },
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 2,
+                        "title": "Core Principles: Meaningful Names, Functions, and Classes",
+                        "content": "Martin provides detailed guidance on writing clean code, starting with meaningful names. Names should reveal intent, avoid disinformation, make meaningful distinctions, be pronounceable, and be searchable. Functions should be small, do one thing, have descriptive names, and have few arguments (ideally zero, one, or two). The fewer arguments a function has, the easier it is to understand and test. Functions should have no side effects and should either do something or answer something, but not both. Classes should be small, have a single responsibility, and have high cohesion. The Single Responsibility Principle states that a class should have only one reason to change. Martin also emphasizes the importance of comments - good code is self-documenting, and comments are often a sign of failure to express yourself in code. When you find yourself writing a comment, try to refactor the code so the comment becomes unnecessary. The goal is to write code that is so clear that comments are redundant.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_2.mp3"
+                    },
+                    {
+                        "summary_id": summ_obj.id,
+                        "section_order": 3,
+                        "title": "Advanced Practices: Error Handling, Boundaries, and Testing",
+                        "content": "Martin covers advanced topics including error handling, which should be done properly and explicitly. Use exceptions rather than return codes, write try-catch-finally statements first, provide context with exceptions, and don't return null or pass null. The book emphasizes the importance of writing clean tests using the three laws of Test-Driven Development (TDD): you may not write production code until you have written a failing unit test, you may not write more of a unit test than is sufficient to fail, and you may not write more production code than is sufficient to pass the currently failing test. Tests should be fast, independent, repeatable, self-validating, and timely. Martin also discusses how to handle boundaries with third-party code, learning tests, and using adapters to isolate boundaries. The book concludes with a comprehensive example of refactoring a program, showing how to apply all the principles discussed. The key message is that writing clean code requires discipline, practice, and a commitment to craftsmanship. It's not about following rules blindly, but about understanding the principles and applying them thoughtfully to create code that is professional, maintainable, and a joy to work with.",
+                        "audio_segment_url": f"https://example.com/audio_segment_{summ_obj.id}_3.mp3"
+                    }
+                ])
+        
+        # Add sections for remaining approved summaries (with shorter content)
+        remaining_summaries = [s for s in approved_summaries if s not in selected_summaries]
+        for idx, summ_obj in enumerate(remaining_summaries[:10]):  # Add sections for first 10 remaining summaries
             content_sections_data.extend([
                 {
                     "summary_id": summ_obj.id,
@@ -1008,7 +1158,7 @@ def seed_data():
                 },
             ])
             # Add a third section for some summaries
-            if idx < 10:
+            if idx < 5:
                 content_sections_data.append({
                     "summary_id": summ_obj.id,
                     "section_order": 3,
