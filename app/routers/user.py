@@ -78,6 +78,125 @@ def list_users(
     return users
 
 
+@router.get("/me", response_model=schema.UserWithRoleResponse)
+def get_current_user_profile(
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get current user's profile"""
+    # Load role relationship
+    user = db.query(models.user.User).options(
+        selectinload(models.user.User.role)
+    ).filter(models.user.User.id == current_user.id).first()
+    return user
+
+
+@router.patch("/me", response_model=schema.UserResponse)
+async def update_current_user(
+    username: str | None = Form(None),
+    email: str | None = Form(None),
+    phone: str | None = Form(None),
+    bio: str | None = Form(None),
+    profile_image: UploadFile | None = File(None),
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Update current user's information with optional image upload"""
+    # Create uploads directory if it doesn't exist
+    upload_dir = Path("static/uploads/profile_images")
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Handle image upload
+    if profile_image:
+        # Validate file type
+        allowed_extensions = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
+        
+        # Handle filename - can be None for React Native uploads
+        original_filename = profile_image.filename or "profile_image.jpg"
+        file_ext = Path(original_filename).suffix.lower()
+        
+        # If no extension, try to get from content type
+        if not file_ext or file_ext not in allowed_extensions:
+            content_type = profile_image.content_type or ""
+            if "image/jpeg" in content_type or "image/jpg" in content_type:
+                file_ext = ".jpg"
+            elif "image/png" in content_type:
+                file_ext = ".png"
+            elif "image/gif" in content_type:
+                file_ext = ".gif"
+            elif "image/webp" in content_type:
+                file_ext = ".webp"
+            else:
+                file_ext = ".jpg"  # Default to jpg
+        
+        if file_ext not in allowed_extensions:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid file type. Allowed: {', '.join(allowed_extensions)}"
+            )
+        
+        # Generate unique filename
+        file_id = str(uuid.uuid4())
+        filename = f"{file_id}{file_ext}"
+        file_path = upload_dir / filename
+        
+        # Save file
+        try:
+            with open(file_path, "wb") as buffer:
+                content = await profile_image.read()
+                buffer.write(content)
+            
+            # Store relative path in database
+            image_url = f"/static/uploads/profile_images/{filename}"
+            
+            # Delete old image if exists (only for relative paths)
+            if current_user.profile_image:
+                old_image = current_user.profile_image
+                # Only process if it's a relative path (starts with /static/)
+                if old_image.startswith("/static/uploads/profile_images/"):
+                    old_image_path = Path("static") / old_image.lstrip("/")
+                    if old_image_path.exists():
+                        old_image_path.unlink()
+            
+            current_user.profile_image = image_url
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to save image: {str(e)}"
+            )
+    
+    # Update other fields
+    if username is not None:
+        # Check if username is already taken by another user
+        existing_user = db.query(models.user.User).filter(
+            models.user.User.username == username,
+            models.user.User.id != current_user.id
+        ).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Username already taken")
+        current_user.username = username
+    
+    if email is not None:
+        # Check if email is already taken by another user
+        existing_user = db.query(models.user.User).filter(
+            models.user.User.email == email,
+            models.user.User.id != current_user.id
+        ).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already taken")
+        current_user.email = email
+    
+    if phone is not None:
+        current_user.phone = phone
+    
+    if bio is not None:
+        current_user.bio = bio
+    
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
+
 @router.get("/{user_id}", response_model=schema.UserResponse)
 def get_user(user_id: int, db: Session = Depends(get_db)):
     """Get a specific user (Public access)"""
@@ -171,88 +290,3 @@ def delete_user(
     db.delete(user)
     db.commit()
     return {"deleted": True}
-
-
-@router.patch("/me", response_model=schema.UserResponse)
-async def update_current_user(
-    username: str | None = Form(None),
-    email: str | None = Form(None),
-    phone: str | None = Form(None),
-    bio: str | None = Form(None),
-    profile_image: UploadFile | None = File(None),
-    current_user = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Update current user's information with optional image upload"""
-    # Create uploads directory if it doesn't exist
-    upload_dir = Path("static/uploads/profile_images")
-    upload_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Handle image upload
-    if profile_image:
-        # Validate file type
-        allowed_extensions = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
-        file_ext = Path(profile_image.filename).suffix.lower()
-        if file_ext not in allowed_extensions:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid file type. Allowed: {', '.join(allowed_extensions)}"
-            )
-        
-        # Generate unique filename
-        file_id = str(uuid.uuid4())
-        filename = f"{file_id}{file_ext}"
-        file_path = upload_dir / filename
-        
-        # Save file
-        try:
-            with open(file_path, "wb") as buffer:
-                content = await profile_image.read()
-                buffer.write(content)
-            
-            # Store relative path in database
-            image_url = f"/static/uploads/profile_images/{filename}"
-            
-            # Delete old image if exists
-            if current_user.profile_image:
-                old_image_path = Path("static") / current_user.profile_image.lstrip("/")
-                if old_image_path.exists():
-                    old_image_path.unlink()
-            
-            current_user.profile_image = image_url
-        except Exception as e:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Failed to save image: {str(e)}"
-            )
-    
-    # Update other fields
-    if username is not None:
-        # Check if username is already taken by another user
-        existing_user = db.query(models.user.User).filter(
-            models.user.User.username == username,
-            models.user.User.id != current_user.id
-        ).first()
-        if existing_user:
-            raise HTTPException(status_code=400, detail="Username already taken")
-        current_user.username = username
-    
-    if email is not None:
-        # Check if email is already taken by another user
-        existing_user = db.query(models.user.User).filter(
-            models.user.User.email == email,
-            models.user.User.id != current_user.id
-        ).first()
-        if existing_user:
-            raise HTTPException(status_code=400, detail="Email already taken")
-        current_user.email = email
-    
-    if phone is not None:
-        current_user.phone = phone
-    
-    if bio is not None:
-        current_user.bio = bio
-    
-    db.commit()
-    db.refresh(current_user)
-    return current_user

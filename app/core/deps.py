@@ -9,11 +9,11 @@ from app.database import get_db
 from app import models
 from typing import Any
 
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 def get_current_user(
     # 2. Change the type hint and variable name to avoid confusion
-    auth: HTTPAuthorizationCredentials = Depends(security), 
+    auth: HTTPAuthorizationCredentials | None = Depends(security), 
     db: Session = Depends(get_db)
 ) -> Any:
     credentials_exception = HTTPException(
@@ -21,6 +21,10 @@ def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    
+    # Check if auth credentials are provided
+    if auth is None:
+        raise credentials_exception
     
     # 3. EXTRACT THE TOKEN STRING HERE
     token = auth.credentials 
